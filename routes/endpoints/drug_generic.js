@@ -1,104 +1,108 @@
 // const { json } = require('express');
-const DrugStore = require('../../models/drugStore')
-const DrugGeneric = require('../../models/drugGeneric')
+const DrugStore = require('../../models/drugstore')
+const DrugGeneric = require('../../models/druggeneric')
 // const config = require ("config")
 // const bcypt = require ("bcrypt.js")
 // const jwt = require("jsonwebtoken");
 
 const routes = function (app) { 
 
-     // GET ALL GENERIC DRUGS
-     app.get("/druggenerics", async (req, res) => {
-        try {
-            let drugGeneric = await DrugGeneric.find();
-            res.status(200).send({drugGeneric, msg:"Gotten generic drugs succesfully"})  
-        } catch (error) {
-            res.status(500).send({msg:"Server error occurs"})
-        }
-    })
+           // GET ALL GENERIC DRUGS IN THE SYSTEM
+           app.get("/druggenerics", async (req, res) => { 
+
+            try {
+                let drug_generic = await DrugGeneric.find({ branch_id }) 
+                res.status(200).send({
+                    data: drug_generic,
+                    msg: "Gotten Drug Generics succesfully"
+                })
+            } catch (error) {
+                res.status(500).send({ msg: "Server error occurs" })
+            }
+        })
 
     // GET ONE OF THE GENERIC
-    app.get("/druggeneric", async (req, res) => {
-        let { name } = req.body
+    app.get("/druggenerics", async (req, res) => {
+        let { generic_name } = req.query
         try {
-            let drugGeneric = await DrugGeneric.findOne({ name })
-            if (!department) {
-                return res.status(200).send({msg:"Drug Generic does not exist"})
+            let drug_generic = await DrugGeneric.findOne({ generic_name })
+            if (!drug_generic) {
+                return res.status(404).send({msg:"Drug Generic does not exist"})
             }
-            res.status(200).send({department, msg:"Gotten Department succesfully"})  
+            res.status(200).send({data:drug_generic, msg:"Gotten Drug Generic succesfully"})  
         } catch (error) {
             res.status(500).send({msg:"Server error occurs"})
         }
     })
 
-    // GET ONE OF THE GENERIC DRUG AND PRODUCTS UNDER IT
-    app.get("/druggeneric", async (req, res) => {
-        let { name } = req.body
+     // GET ONE OF THE GENERIC DRUG AND PRODUCTS UNDER IT
+     app.get("/druggeneric/drugstore", async (req, res) => {
+        let { generic_name } = req.query
         try {
-            let drugGeneric = await DrugGeneric.findOne({ name })
-            if (!drugGeneric) {
-                return res.status(200).send({msg:"Drug Generic does not exist"})
+            let drug_generic = await DrugGeneric.findOne({ generic_name })
+            if (!drug_generic) {
+                return res.status(404).send({msg:"Drug Generic does not exist"})
             }
-            let {_id} = drugGeneric
-            let drugProducts = await DrugStore.find({ _id })
-            res.status(200).send({drugProducts, drugGeneric, msg:"Gotten Drug Products and Drug Generics succesfully"})  
+            let {_id} = drug_generic
+            let drug_products = await DrugStore.find({ _id })
+            res.status(200).send({data:[drug_products, drug_generic], msg:"Gotten Drug Products and Drug Generic succesfully"})  
         } catch (error) {
             res.status(500).send({msg:"Server error occurs"})
         }
     })
 
-    // CREATE DRUG GENERIC
-    app.post("/createdruggeneric", async (req, res) => {
-        let { name, company_prod, } = req.body
+
+      // CREATE DRUG GENERIC
+      app.post("/druggenerics", async (req, res) => {
+        let { generic_name, prefix, } = req.body
         try {
-            let drugGeneric = await DrugGeneric.findOne({ name })
-            if (drugGeneric) {
-                return res.status(200).send({drugGeneric, msg:"Drug Generic alrady exist"})
+            let drug_generic = await DrugGeneric.findOne({ generic_name })
+            if (drug_generic) {
+                return res.status(404).send({data:drug_generic, msg:"Drug Generic already exist"})
             }
-            drugGeneric = new DrugGeneric({ 
-                name, 
-                company_prod
+            drug_generic = new DrugGeneric({ 
+                generic_name, 
+                prefix,
             })
-            await drugGeneric.save()
-            res.status(200).send({drugGeneric, msg:"Drug Generic created"}) 
-        } catch (err) {
-            console.log(err)
-            res.status(400).send({msg: "Server error"})
+            await drug_generic.save()
+            res.status(200).send({data:drug_generic, msg:"Drug Generic created"}) 
+        } catch (error) { 
+            res.status(500).send({msg: "Server error"})
         }
     })
 
-    // EDIT DRUG GENERIC INFORMATION
-    app.put("/updatedruggeneric/:_id", async (req, res) => {
+       // EDIT DEPARTMENT INFORMATION
+       app.put("/druggenerics/:_id", async (req, res) => {
         try {
             let { _id } = req.params
             let { body } = req;
-            let drugGenericUpdate = await DrugGeneric.findById(_id)
-            if (!drugGenericUpdate) return res.json({ msg: "Drug Generic not found", code: 404})
+            let drug_generic_update = await DrugGeneric.findById(_id)
+            if (!drug_generic_update) return  res.status(404).send({ msg: "Drug Generic not found" })
 
-            let data = drugGenericUpdate._doc;
-            drugGenericUpdate.overwrite({ ...data, ...body })
-           const drugGeneric = await drugGenericUpdate.save()
-            res.status(200).send({drugGeneric, msg: "Drug Generic updated"})
+            let data = drug_generic_update._doc;
+            drug_generic_update.overwrite({ ...data, ...body })
+            const drug_generic = await drug_generic_update.save()
+            res.status(200).send({ data:drug_generic, msg: "Drug Generic updated" })
         } catch (err) {
             console.log(err)
             res.send("Server error")
         }
     })
-
+   
     // DELETE DRUG GENERIC
     app.delete("/deletedruggeneric/:_id", async (req, res) => {
         try {
             let { _id } = req.params
-            let deletedrugGeneric = await DrugGeneric.findById(_id)
+            let deletedrug_generic = await DrugGeneric.findById(_id)
 
-            if (!deletedrugGeneric) return res.status(200).send({ msg: "Drug Generic doesn't exist"})
+            if (!deletedrug_generic) return res.status(404).send({ msg: "Drug Generic doesn't exist"})
 
             deletedrugGeneric.remove();
 
             res.status(200).send({ msg: "Drug Generic deleted"})
         } catch (err) {
             console.log(err)
-            res.send("Server error")
+            res.status(500).send("Server error")
         }
     })
    

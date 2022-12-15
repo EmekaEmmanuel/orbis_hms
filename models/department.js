@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const DepartmentSchema = new Schema({
-    name:{type: String, required:true, unique:true}, 
+    dept_name:{type: String, required:true, unique:true}, 
     prefix:{type: String, required:true},
     img:{type: String, default:"fsdgvbhjnd"}, 
     wardcount:{type: Number, default:0},

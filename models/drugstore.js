@@ -6,7 +6,7 @@ const DrugStoreSchema = new Schema({
     expirydate:{type: Number,required:true},
     batchnumber:{type:Number, required:true},
     manufacturingDate:{type: Number, required:true},
-    drugGeneric_id:{type:Schema.Types.ObjectId, ref:'drugdenerics'},
+    drugGeneric_id:{type:Schema.Types.ObjectId, ref:'druggenerics'},
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'},
     company_prod:{type: String, required:true},
     deleted:{type:Boolean, default:false}}, 

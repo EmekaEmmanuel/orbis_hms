@@ -4,65 +4,76 @@ const Department = require('../../models/department')
 // const bcypt = require ("bcrypt.js")
 // const jwt = require("jsonwebtoken");
 
-const routes = function (app) { 
+const routes = function (app) {
 
-     // GET ALL DEPARTMENTS
-     app.get("/departments", async (req, res) => {
+    // GET ALL DEPARTMENTS IN THE BRANCH
+    app.get("/departments", async (req, res) => {
+        const { branch_id } = req.query
         try {
-            let department = await Department.find();
-            res.status(200).send({department, msg:"Gotten departments succesfully"})  
-        } catch (error) {
-            res.status(500).send({msg:"Server error occurs"})
-        }
-    })
-
-    // GET ONE DEPARTMENT
-    app.get("/department", async (req, res) => {
-        let { name } = req.body
-        try {
-            let department = await Department.findOne({ number })
+            let department = await Department.find({ branch_id })
             if (!department) {
-                return res.status(200).send({msg:"Department does not exist"})
+                return res.status(404).send({
+                    msg: "Department does not exist in the branch",
+                });
             }
-            res.status(200).send({department, msg:"Gotten Department succesfully"})  
+            res.status(200).send({
+                data: department,
+                msg: "Gotten Departments succesfully"
+            })
         } catch (error) {
-            res.status(500).send({msg:"Server error occurs"})
+            res.status(500).send({ msg: "Server error occurs" })
         }
     })
 
-    // CREATE DEPARTMETNTS
-    app.post("/createdepartment", async (req, res) => {
-        let {  name, branch_id, contact_number } = req.body
+    // GET ONE DEPARTMENT IN THE BRANCH
+    app.get("/departments/one", async (req, res) => {
+        const { dept_name, branch_id } = req.query
         try {
-            let department = await Department.findOne({ name })
-            if (department) {
-                return res.status(200).send({bedspace, msg:"Bedspace alrady exist"})
+            let department = await Department.findOne({ dept_name, branch_id })
+            if (!department) {
+                return res.status(404).send({ msg: "Department does not exist" })
             }
-            department = new Department({ 
-                name,
+            res.status(200).send({ data: department, msg: "Gotten Department succesfully" })
+        } catch (error) {
+            res.status(500).send({ msg: "Server error occurs" })
+        }
+    })
+
+    // CREATE DEPARTMENT
+    app.post("/departments", async (req, res) => {
+        let { dept_name, prefix, img, wardcount, branch_id, phone_number, deleted } = req.body
+        try {
+            let department = await Department.findOne({ dept_name })
+            if (department) {
+                return res.status(404).send({ data: bedspace, msg: "Department already exist" })
+            }
+            department = new Department({
+                dept_name, 
+                prefix, img, 
+                wardcount, 
                 branch_id, 
-                contact_number
+                phone_number, 
+                deleted
             })
             await department.save()
-            res.status(200).send({department, msg:"Department created"}) 
-        } catch (err) {
-            console.log(err)
-            res.status(400).send({msg: "Server error"})
+            res.status(200).send({ data: department, msg: "Department created" })
+        } catch (error) {
+            res.status(500).send({ msg: "Server error occurs" })
         }
     })
 
-    // EDIT DEPARTMENT INFORMATION
-    app.put("/updatedepartment/:_id", async (req, res) => {
+       // EDIT DEPARTMENT INFORMATION
+       app.put("/department/:_id", async (req, res) => {
         try {
             let { _id } = req.params
             let { body } = req;
             let departmentUpdate = await Department.findById(_id)
-            if (!departmentUpdate) return res.json({ msg: "Department not found", code: 404})
+            if (!departmentUpdate) return  res.status(404).send({ msg: "Department not found" })
 
             let data = departmentUpdate._doc;
             departmentUpdate.overwrite({ ...data, ...body })
-           const department = await departmentUpdate.save()
-            res.status(200).send({department, msg: "Department updated"})
+            const department = await departmentUpdate.save()
+            res.status(200).send({ data:department, msg: "Department updated" })
         } catch (err) {
             console.log(err)
             res.send("Server error")
@@ -70,22 +81,19 @@ const routes = function (app) {
     })
 
     // DELETE DEPARTMENT
-    app.delete("/deletedepartment/:_id", async (req, res) => {
+    app.delete("/department/:id", async (req, res) => {
         try {
-            let { _id } = req.params
-            let deletedepartment = await Department.findById(_id)
-
-            if (!deletedepartment) return res.status(200).send({ msg: "Department doesn't exist"})
+            let { id } = req.params
+            let deletedepartment = await Department.findById(id)
+            if (!deletedepartment) return res.status(404).send({ msg: "Department doesn't exist" })
 
             deletedepartment.remove();
 
-            res.status(200).send({ msg: "Department deleted"})
-        } catch (err) {
-            console.log(err)
-            res.send("Server error")
+            res.status(200).send({ msg: "Department deleted" })
+        } catch (error) {
+            res.send({ msg: "Server error occurs" })
         }
     })
-   
 }
 
 module.exports = routes
