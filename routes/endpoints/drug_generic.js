@@ -90,7 +90,7 @@ const routes = function (app) {
     })
    
     // DELETE DRUG GENERIC
-    app.delete("/deletedruggeneric/:_id", async (req, res) => {
+    app.delete("/druggenerics/:_id", async (req, res) => {
         try {
             let { _id } = req.params
             let deletedrug_generic = await DrugGeneric.findById(_id)
