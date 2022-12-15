@@ -1,17 +1,35 @@
 // const { json } = require('express');
-const DrugStore = require('../../models/drugStore')
-const DrugGeneric = require('../../models/drugGeneric')
+const DrugStore = require('../../models/drugstore')
+const DrugGeneric = require('../../models/druggeneric')
 // const config = require ("config")
 // const bcypt = require ("bcrypt.js")
 // const jwt = require("jsonwebtoken");
 
 const routes = function (app) {
 
-     // GET ALL DRUGS IN THE STORE
+     // GET ALL DRUGS IN THE BRANCH STORE
      app.get("/drugstores", async (req, res) => {
         try {
-            let drugStore = await DrugStore.find({deleted:false});
-            res.status(200).send({drugStore, msg:"Gotten all drugs succesfully"})  
+            let drug_store = await DrugStore.find();
+            res.status(200).send({data:drug_store, msg:"Gotten all drugs succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+
+     // GET ALL DRUGS IN THE BRANCH
+     app.get("/drugstores", async (req, res) => {
+        const { branch_id } = req.query
+        try {
+            let bedspace = await DrugStore.find({ branch_id })
+            if (!bedspace) { 
+                return res.status(404).send({ 
+                    msg: "Bedspace does not exist in the branch",
+                  });
+            }
+            res.status(200).send({
+                data:bedspace,
+                msg:"Gotten Branch Bedspaces succesfully"})  
         } catch (error) {
             res.status(500).send({msg:"Server error occurs"})
         }
