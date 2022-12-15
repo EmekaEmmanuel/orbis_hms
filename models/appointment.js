@@ -3,8 +3,9 @@ const Schema = mongoose.Schema
 
 const AppointmentSchema = new Schema({
     appointment_number:{type: Number, unique:true},
-    patient_id:{type:Schema.Types.ObjectId, ref:'users'}, 
-    created_by:{type:Schema.Types.ObjectId, ref:'users'}, 
+    patient_id:{type:Schema.Types.ObjectId, ref:'patients'}, 
+    created_by:{type:String}, 
+
     to_see:{type:Schema.Types.ObjectId, ref:'users'}, 
     booked_on:{type:String},
     department_id:{type:Schema.Types.ObjectId, ref:'departments'},  
