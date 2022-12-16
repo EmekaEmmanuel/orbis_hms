@@ -36,7 +36,7 @@ const routes = function (app) {
         }
     })
 
-     // GET ONE OF THE GENERIC DRUG AND PRODUCTS UNDER IT
+     // GET ONE OF THE GENERIC DRUG AND PRODUCTS UNDER IT 
      app.get("/druggeneric/drugstore", async (req, res) => {
         let { generic_name } = req.query
         try {

@@ -6,6 +6,7 @@ const PatientSchema = new Schema({
     first_name:{type: String, required:true},
     surname:{type: String, required:true},
     other_name:{type: String},
+    img:{type: String},
     address:{type: String, required:true},
     email:{type: String,required:true},
     password:{type:String, default:"1234"},

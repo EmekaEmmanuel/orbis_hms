@@ -66,6 +66,40 @@ const routes = function (app) {
         }
     }) 
 
+    // GET NUMBER OF BEDSPACES IN A WARD THAT IS OCCUPIED 
+    // GET NUMBER OF BEDSPACES IN A WARD THAT IS FREE
+    // status stands for a boolean value; true or false
+
+    app.get("/bedspaces/occupied", async (req, res) => {
+        let { boolean_value } = req.query
+        try {
+            let bedspace = await BedSpace.find({ is_occupied:boolean_value, ward_id }).sort(-1)
+            if (!bedspace) {
+                return res.status(404).send({msg:"Bedspace does not exist in the branch"})
+            }
+            res.status(200).send({data:bedspace, msg:"Gotten Bedspace succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+
+    // GET NUMBER OF BEDSPACES IN A BRANCH THAT IS OCCUPIED 
+    // GET NUMBER OF BEDSPACES IN A BRANCH THAT IS FREE
+    // status stands for a boolean value; true or false
+    app.get("/bedspaces/occupied", async (req, res) => {
+        let { boolean_value, branch_id } = req.query
+        try {
+            let bedspace = await BedSpace.find({ is_occupied:boolean_value, branch_id }).sort(-1)
+            if (!bedspace) {
+                return res.status(404).send({msg:"Bedspace does not exist in the branch"})
+            }
+            res.status(200).send({data:bedspace, msg:"Gotten Bedspace succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+
+
     // CREATE BED SPACE
     app.post("/bedspaces", async (req, res) => {
         let { bed_number, ward_id, department_id, branch_id, card_no, phone_number, is_occupied } = req.body
