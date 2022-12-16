@@ -9,6 +9,7 @@ const WardSchema = new Schema({
     department_id:{type:Schema.Types.ObjectId, ref:'departments'}, 
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'},
     contact_number:{type: Number},
+    created_ward:{type:Schema.Types.ObjectId, ref:'users'},
     deleted:{type:Boolean, default:false}},
     {
         timestamps:true

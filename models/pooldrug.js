@@ -11,6 +11,7 @@ const PoolDrugSchema = new Schema({
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'},
     hospital_id:{type:Schema.Types.ObjectId, ref:'hospitals'},
     company_prod:{type: String, required:true},
+    entered_drug:{type:Schema.Types.ObjectId, ref:'users'},
     deleted:{type:Boolean, default:false}}, 
     {
         timestamps:true

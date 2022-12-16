@@ -95,6 +95,7 @@ const routes = function (app) {
             drug_generic = new DrugGeneric({ 
                 generic_name, 
                 prefix,
+                created_generic
             })
             await drug_generic.save()
             res.status(200).send({data:drug_generic, msg:"Drug Generic created"}) 

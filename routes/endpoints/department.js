@@ -53,7 +53,8 @@ const routes = function (app) {
                 wardcount, 
                 branch_id, 
                 phone_number, 
-                deleted
+                deleted,
+                created_dept
             })
             await department.save()
             res.status(200).send({ data: department, msg: "Department created" })

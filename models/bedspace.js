@@ -9,7 +9,7 @@ const BedSpaceSchema = new Schema({
     card_no:{type: String, default:""},
     phone_number:{type: String},
     is_occupied:{type: Boolean, default:false},
-    created_by:{type:Schema.Types.ObjectId, ref:'users'}},
+    created_bedspace:{type:Schema.Types.ObjectId, ref:'users'}},
     {
         timestamps:true
     }

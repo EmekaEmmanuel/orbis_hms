@@ -11,7 +11,7 @@ const DrugStoreSchema = new Schema({
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'},
     hospital_id:{type:Schema.Types.ObjectId, ref:'hospitals'},
     company_produce:{type: String, required:true},
-    entered_by:{type:Schema.Types.ObjectId, ref:'users'},
+    entered_drug:{type:Schema.Types.ObjectId, ref:'users'},
     deleted:{type:Boolean, default:false}}, 
     {
         timestamps:true

@@ -1,8 +1,7 @@
 // const { json } = require('express');
 const DrugStore = require('../../models/drugstore')
 const DrugGeneric = require('../../models/druggeneric')
-const DrugPool = require('../../models/pooldrug')
-const PoolDrug = require('../../models/pooldrug')
+const DrugPool = require('../../models/pooldrug') 
 // const config = require ("config")
 // const bcypt = require ("bcrypt.js")
 // const jwt = require("jsonwebtoken");
@@ -70,7 +69,7 @@ const routes = function (app) {
     app.post("/drugstores", async (req, res) => {
 
         try {
-            let drugFn = async (drug, DrugStore, drug_id, name, expirydate, batchnumber, manufacturingDate, drugGeneric_id, branch_id) => {
+            let drugFn = async (drug, DrugStore, drug_id, name, expirydate, batchnumber, manufacturingDate, drugGeneric_id, branch_id, entered_drug) => {
 
                 let { name, expirydate, batchnumber, manufacturingDate, drugGeneric_id, branch_id } = req.body
 
@@ -85,7 +84,8 @@ const routes = function (app) {
                     batchnumber,
                     manufacturingDate,
                     drugGeneric_id,
-                    branch_id
+                    branch_id,
+                    entered_drug
                 })
                 await drug.save()
             }
@@ -103,7 +103,8 @@ const routes = function (app) {
                     batchnumber,
                     manufacturingDate,
                     drugGeneric_id,
-                    branch_id
+                    branch_id,
+                    entered_drug
                 })
                 await pool_drug.save()
             }
@@ -132,7 +133,7 @@ const routes = function (app) {
             let poolDrugFn = async (_id, body) => {
                 let { _id } = req.params
                 let { body } = req;
-                let drugStoreUpdate = await PoolDrug.findById(_id)
+                let drugStoreUpdate = await DrugPool.findById(_id)
                 if (!drugStoreUpdate) return res.json({ msg: "Drug Generic not found", code: 404 })
 
                 let data = drugStoreUpdate._doc;
@@ -162,7 +163,7 @@ const routes = function (app) {
 
             let poolDrugFn = async (id) => {
                 let { _id } = req.params
-                let deletedrugStore = await DrugStore.findById(_id)
+                let deletedrugStore = await DrugPool.findById(_id)
 
                 if (!deletedrugStore) return res.status(200).send({ msg: "Drug doesn't exist" })
 

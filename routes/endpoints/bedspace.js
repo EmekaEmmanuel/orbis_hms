@@ -81,7 +81,8 @@ const routes = function (app) {
                 branch_id, 
                 card_no, 
                 phone_number,
-                is_occupied
+                is_occupied,
+                created_bedspace
             })
             await bedspace.save()
             res.status(200).send({data:bedspace, msg:"Bedspace created"}) 

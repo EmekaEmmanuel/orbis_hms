@@ -9,6 +9,7 @@ const PatientSchema = new Schema({
     address:{type: String, required:true},
     email:{type: String,required:true},
     password:{type:String, default:"1234"},
+    access_key:{type:String, default:"1234"},
     phone_number:{type: Number},
     gender:{type: String, required:true},
     age:{type: String, required:true},
