@@ -1,9 +1,7 @@
 const { json } = require('express');
-const User = require('../../models/users')
 const config = require("config")
 const bcypt = require("bcrypt.js")
-const jwt = require("jsonwebtoken");
-const User = require('../../models/accounts');
+const jwt = require("jsonwebtoken"); 
 const Patient = require('../../models/patient');
 const upload = require('../../middleware/multer');
 const { transporter } = require('../../middleware/mailer');
