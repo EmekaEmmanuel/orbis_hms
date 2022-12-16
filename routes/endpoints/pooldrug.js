@@ -53,8 +53,7 @@ const routes = function (app) {
             res.status(500).send({ msg: "Server error occurs" })
         }
     })
-
-    //  COMPLETED
+    
 }
 
 module.exports = routes

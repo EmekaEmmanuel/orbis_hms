@@ -1,121 +1,132 @@
 // const { json } = require('express');
-const BedSpace = require('../../models/bedspace')
+const Appointment = require('../../models/appointment')
 // const config = require ("config")
 // const bcypt = require ("bcrypt.js")
 // const jwt = require("jsonwebtoken");
 
 const routes = function (app) {
 
-    // GET ALL BEDSPACES IN THE BRANCH
-    app.get("/bedspaces", async (req, res) => {
+    // GET ALL APPOINTMENTS IN THE BRANCH
+    app.get("/appointments", async (req, res) => {
         const { branch_id } = req.query
         try {
-            let bedspace = await BedSpace.find({ branch_id })
-            if (!bedspace) { 
+            let appointment = await Appointment.find({ branch_id })
+            if (!appointment) { 
                 return res.status(404).send({ 
-                    msg: "Bedspace does not exist in the branch",
+                    msg: "Appointment does not exist in this branch",
                   });
             }
             res.status(200).send({
                 data:bedspace,
-                msg:"Gotten Branch Bedspaces succesfully"})  
+                msg:"Gotten Branch Appointments succesfully"})  
         } catch (error) {
             res.status(500).send({msg:"Server error occurs"})
         }
     })
 
-    // GET  ONE BEDSPACE IN THE BRANCH
-    app.get("/bedspaces/branch/one", async (req, res) => {
-        let { bed_number, branch_id } = req.query
+    // GET ALL APPOINTMENTS IN THE DEPARTMENT
+    app.get("/appointments/dept", async (req, res) => {
+        const { branch_id, department_id } = req.query
         try {
-            let bedspace = await BedSpace.findOne({ bed_number, branch_id })
-            if (!bedspace) {
-                return res.status(404).send({msg:"Bedspace does not exist in the branch"})
+            let appointment = await Appointment.find({ branch_id, department_id })
+            if (!appointment) { 
+                return res.status(404).send({ 
+                    msg: "Appointment does not exist in this branch",
+                  });
             }
-            res.status(200).send({data:bedspace, msg:"Gotten Bedspace succesfully"})  
+            res.status(200).send({
+                data:bedspace,
+                msg:"Gotten Department Appointments succesfully"})  
         } catch (error) {
             res.status(500).send({msg:"Server error occurs"})
         }
     })
 
-    // GET ALL BEDSPACES IN A BRANCH WARD
-    app.get("/bedspaces/ward", async (req, res) => {
-        let { branch_id, ward_id } = req.query
+    // GET ALL APPOINTMENTS WITH A STAFF IN A BRANCH
+    app.get("/appointments/staff", async (req, res) => {
+        const { branch_id, to_see } = req.query
         try {
-            let bedspace = await BedSpace.find({ branch_id, ward_id })
-            if (!bedspace) {
-                return res.status(404).send({msg:"Bedspace does not exist in the branch"})
+            let appointment = await Appointment.find({ branch_id, to_see })
+            if (!appointment) { 
+                return res.status(404).send({ 
+                    msg: "There is no Appointment for this staff ",
+                  });
             }
-            res.status(200).send({data:bedspace, msg:"Gotten Bedspace succesfully"})  
+            res.status(200).send({
+                data:appointment,
+                msg:"Gotten Staff Appointments succesfully"})  
         } catch (error) {
             res.status(500).send({msg:"Server error occurs"})
         }
     })
 
-    // GET  ONE BEDSPACE IN THE WARD
-    app.get("/bedspaces/ward/one", async (req, res) => {
-        let { bed_number, ward_id } = req.query
+    // GET PATIENT APPOINTMENT IN A BRANCH 
+    app.get("/appointments/patient", async (req, res) => {
+        const { card_no } = req.query
         try {
-            let bedspace = await BedSpace.findOne({ bed_number, ward_id })
-            if (!bedspace) {
-                return res.status(404).send({msg:"Bedspace does not exist in the branch"})
+            let appointment = await Appointment.find({ card_no }).sort(-1)
+            if (!appointment) { 
+                return res.status(404).send({ 
+                    msg: "There is no Appointment for this patient in this branch ",
+                  });
             }
-            res.status(200).send({data:bedspace, msg:"Gotten Bedspace succesfully"})  
+            res.status(200).send({
+                data:appointment,
+                msg:"Gotten Patient Appointment succesfully"})  
         } catch (error) {
             res.status(500).send({msg:"Server error occurs"})
         }
-    }) 
+    })
 
-    // CREATE BED SPACE
-    app.post("/bedspaces", async (req, res) => {
-        let { bed_number, ward_id, department_id, branch_id, card_no, phone_number, is_occupied } = req.body
+    // TODO:
+    // GET ALL PENDING, COMPLETED, IN-PROGRESS, DECLINED, CONFIRMED FOR BRANCH, WARD, STAFF, PATIENT
+    
+    // CREATE APPOINTMENT
+    app.post("/appointments", async (req, res) => {
+        let {appointment_number, card_no, created_by, role, to_see, booked_for, department_id, branch_id,
+            appointment_status } = req.body
         try {
-            let bedspace = await BedSpace.findOne({ bed_number })
-            if (bedspace) {
-                return res.status(404).send({data:bedspace, msg:"Bedspace already exist"})
+            let appointment = await Appointment.findOne({ appointment_number })
+            if (appointment) {
+                return res.status(404).send({data:appointment, msg:"Appointment already exist"})
             }
-            bedspace = new BedSpace({ 
-                bed_number, 
-                ward_id, 
-                department_id, 
-                branch_id, 
-                card_no, 
-                phone_number,
-                is_occupied
+
+            appointment = new Appointment({ 
+              appointment_number, card_no, created_by, role, to_see, booked_for, department_id, branch_id, appointment_status
             })
-            await bedspace.save()
-            res.status(200).send({data:bedspace, msg:"Bedspace created"}) 
+            await appointment.save()
+            res.status(200).send({data:appointment, msg:"Appointment created"}) 
         } catch (error) { 
             res.status(500).send({msg: "Server error occurs"})
         }
     })
 
-    // EDIT BEDSPACE INFORMATION
-    app.put("/bedspaces/:id", async (req, res) => {
+    // EDIT APPOINTMENT INFORMATION
+    app.put("/appointments/:id", async (req, res) => {
         try {
             let { id } = req.params
             let { body } = req;
-            let bedspaceUpdate = await BedSpace.findById(id)
-            if (!bedspaceUpdate) return res.status(404).send({ msg: "Bed space not found"})
-            let data = bedspaceUpdate._doc;
-            bedspaceUpdate.overwrite({ ...data, ...body })
-           const bedspace = await bedspaceUpdate.save()
-            res.status(200).send({data:bedspace, msg: "Bedspace updated"})
+            let appointmentUpdate = await Appointment.findById(id)
+            if (!appointmentUpdate) return res.status(404).send({ msg: "Appointment not found"})
+            let data = appointmentUpdate._doc;
+            appointmentUpdate.overwrite({ ...data, ...body })
+           const appointment = await appointmentUpdate.save()
+            res.status(200).send({data:appointment, msg: "Appointment updated"})
         } catch (error) { 
             res.status(500).send({msg:"Server error occurs"})
         }
     })
 
-    // DELETE BEDSPACE
-    app.delete("/bedspaces/:id", async (req, res) => {
+    // DELETE APPOINTMENT
+    app.delete("/appointments/:id", async (req, res) => {
         try {
             let { id } = req.params
-            let deletebedspace = await BedSpace.findById(id)
-            if (!deletebedspace) return res.status(404).send({ msg: "Bedspace doesn't exist"})
+            let deleteappointment = await Appointment.findById(id)
+            if (!deleteappointment) return res.status(404).send({ msg: "Appointment doesn't exist"})
 
-            deletebedspace.remove();
+            deleteappointment.remove();
 
-            res.status(200).send({ msg: "Bedspace deleted"})
+            res.status(200).send({ msg: "Appointment deleted"})
         } catch (error) { 
             res.send({msg:"Server error occurs"})
         }

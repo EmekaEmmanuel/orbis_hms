@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const AppointmentSchema = new Schema({
     appointment_number:{type: Number, unique:true},
-    patient_id:{type:Schema.Types.ObjectId, ref:'patients'}, 
+    card_no:{type:String, unique:true, required:true}, 
     created_by:{type:String}, 
     role:{type:String, required:true},
     to_see:{type:Schema.Types.ObjectId, ref:'users'}, 

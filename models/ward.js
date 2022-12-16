@@ -2,11 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const WardSchema = new Schema({
-    name:{type: String, required:true, unique:true}, 
-    prefix:{type: String, required:true}, 
-    img:{type: String}, 
-    bedcount:{type: Number},
-    department_id:{type:Schema.Types.ObjectId, ref:'departments'}, 
+    ward_name:{type: String, required:true, unique:true}, 
+    ward_prefix:{type: String, required:true, unique:true},  
+    bedcount:{type: Number}, 
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'},
     contact_number:{type: Number},
     created_ward:{type:Schema.Types.ObjectId, ref:'users'},
