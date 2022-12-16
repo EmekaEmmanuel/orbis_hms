@@ -1,8 +1,4 @@
-// const { json } = require('express'); 
-const Department = require('../../models/department')
-// const config = require ("config")
-// const bcypt = require ("bcrypt.js")
-// const jwt = require("jsonwebtoken");
+const Department = require('../../models/department') 
 
 const routes = function (app) {
 

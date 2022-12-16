@@ -1,8 +1,4 @@
-// const { json } = require('express');
-const BedSpace = require('../../models/bedspace')
-// const config = require ("config")
-// const bcypt = require ("bcrypt.js")
-// const jwt = require("jsonwebtoken");
+const BedSpace = require('../../models/bedspace') 
 
 const routes = function (app) {
 
@@ -66,10 +62,7 @@ const routes = function (app) {
         }
     }) 
 
-    // GET NUMBER OF BEDSPACES IN A WARD THAT IS OCCUPIED 
-    // GET NUMBER OF BEDSPACES IN A WARD THAT IS FREE
-    // status stands for a boolean value; true or false
-
+    // GET NUMBER OF WARD BEDSPACES OCCUPIED STATUS 
     app.get("/bedspaces/occupied", async (req, res) => {
         let { boolean_value } = req.query
         try {
@@ -83,9 +76,7 @@ const routes = function (app) {
         }
     })
 
-    // GET NUMBER OF BEDSPACES IN A BRANCH THAT IS OCCUPIED 
-    // GET NUMBER OF BEDSPACES IN A BRANCH THAT IS FREE
-    // status stands for a boolean value; true or false
+    // GET NUMBER OF BRANCH BEDSPACES OCCUPIED STATUS 
     app.get("/bedspaces/occupied", async (req, res) => {
         let { boolean_value, branch_id } = req.query
         try {
@@ -99,10 +90,9 @@ const routes = function (app) {
         }
     })
 
-
     // CREATE BED SPACE
     app.post("/bedspaces", async (req, res) => {
-        let { bed_number, ward_id, department_id, branch_id, card_no, phone_number, is_occupied } = req.body
+        let { bed_number, ward_id, department_id, branch_id, card_no, phone_number, is_occupied, created_bedspace } = req.body
         try {
             let bedspace = await BedSpace.findOne({ bed_number })
             if (bedspace) {
@@ -126,15 +116,15 @@ const routes = function (app) {
     })
 
     // EDIT BEDSPACE INFORMATION
-    app.put("/bedspaces/:id", async (req, res) => {
+    app.put("/bedspaces/:_id", async (req, res) => {
         try {
-            let { id } = req.params
+            let { _id } = req.params
             let { body } = req;
-            let bedspaceUpdate = await BedSpace.findById(id)
-            if (!bedspaceUpdate) return res.status(404).send({ msg: "Bed space not found"})
+            let bedspace_update = await BedSpace.findById(_id)
+            if (!bedspace_update) return res.status(404).send({ msg: "Bed space not found"})
             let data = bedspaceUpdate._doc;
-            bedspaceUpdate.overwrite({ ...data, ...body })
-           const bedspace = await bedspaceUpdate.save()
+            bedspace_update.overwrite({ ...data, ...body })
+           const bedspace = await bedspace_update.save()
             res.status(200).send({data:bedspace, msg: "Bedspace updated"})
         } catch (error) { 
             res.status(500).send({msg:"Server error occurs"})
@@ -145,14 +135,14 @@ const routes = function (app) {
     app.delete("/bedspaces/:id", async (req, res) => {
         try {
             let { id } = req.params
-            let deletebedspace = await BedSpace.findById(id)
-            if (!deletebedspace) return res.status(404).send({ msg: "Bedspace doesn't exist"})
+            let delete_bedspace = await BedSpace.findById(id)
+            if (!delete_bedspace) return res.status(404).send({ msg: "Bedspace doesn't exist"})
 
-            deletebedspace.remove();
+            delete_bedspace.remove();
 
             res.status(200).send({ msg: "Bedspace deleted"})
         } catch (error) { 
-            res.send({msg:"Server error occurs"})
+            res.status(500).send({msg:"Server error occurs"})
         }
     })
 

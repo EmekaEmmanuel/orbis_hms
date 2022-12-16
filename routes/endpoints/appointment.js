@@ -1,8 +1,6 @@
-// const { json } = require('express');
 const Appointment = require('../../models/appointment')
-// const config = require ("config")
-// const bcypt = require ("bcrypt.js")
-// const jwt = require("jsonwebtoken");
+const Patient = require('../../models/patient')
+
 
 const routes = function (app) {
 
@@ -18,7 +16,7 @@ const routes = function (app) {
             }
             res.status(200).send({
                 data:bedspace,
-                msg:"Gotten Branch Appointments succesfully"})  
+                msg:"Gotten all Appointments in the Branch succesfully"})  
         } catch (error) {
             res.status(500).send({msg:"Server error occurs"})
         }
@@ -60,11 +58,49 @@ const routes = function (app) {
         }
     })
 
-    // GET PATIENT APPOINTMENT IN A BRANCH 
+    // GET ALL APPOINTMENTS DETAILS WITH A STAFF IN A BRANCH
+    app.get("/appointments/staff", async (req, res) => {
+        const { branch_id, _id } = req.query
+        try {
+            let appointment = await Appointment.find({ branch_id, _id })?.populate("to_see").populate("department_id").populate("branch_id")
+            if (!appointment) { 
+                return res.status(404).send({ 
+                    msg: "Appointment doesnt exist",
+                  });
+            }
+            let {card_no} = appointment
+            let patient = await Patient.findOne({ card_no })
+            res.status(200).send({
+                data:[appointment, patient],
+                msg:"Gotten Patient Appointment details succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+
+    // GET PATIENT APPOINTMENTS 
     app.get("/appointments/patient", async (req, res) => {
-        const { card_no } = req.query
+        const { card_no, } = req.query
         try {
             let appointment = await Appointment.find({ card_no }).sort(-1)
+            if (!appointment) { 
+                return res.status(404).send({ 
+                    msg: "There is no Appointment for this patient",
+                  });
+            }
+            res.status(200).send({
+                data:appointment,
+                msg:"Gotten Patient Appointment succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+
+    // GET PATIENT APPOINTMENT IN A BRANCH 
+    app.get("/appointments/patient", async (req, res) => {
+        const { card_no, branch_id } = req.query
+        try {
+            let appointment = await Appointment.find({ card_no, branch_id }).sort(-1)
             if (!appointment) { 
                 return res.status(404).send({ 
                     msg: "There is no Appointment for this patient in this branch ",
@@ -102,16 +138,16 @@ const routes = function (app) {
     })
 
     // EDIT APPOINTMENT INFORMATION
-    app.put("/appointments/:id", async (req, res) => {
+    app.put("/appointments/:_id", async (req, res) => {
         try {
-            let { id } = req.params
+            let { _id } = req.params
             let { body } = req;
-            let appointmentUpdate = await Appointment.findById(id)
-            if (!appointmentUpdate) return res.status(404).send({ msg: "Appointment not found"})
-            let data = appointmentUpdate._doc;
-            appointmentUpdate.overwrite({ ...data, ...body })
-           const appointment = await appointmentUpdate.save()
-            res.status(200).send({data:appointment, msg: "Appointment updated"})
+            let appointment_update = await Appointment.findById(_id)
+            if (!appointment_update) return res.status(404).send({ msg: "Appointment not found"})
+            let data = appointment_update._doc;
+            appointment_update.overwrite({ ...data, ...body })
+           const appointment = await appointment_update.save()
+            res.status(200).send({data:appointment, msg: "Appointment details updated"})
         } catch (error) { 
             res.status(500).send({msg:"Server error occurs"})
         }
@@ -121,10 +157,10 @@ const routes = function (app) {
     app.delete("/appointments/:id", async (req, res) => {
         try {
             let { id } = req.params
-            let deleteappointment = await Appointment.findById(id)
-            if (!deleteappointment) return res.status(404).send({ msg: "Appointment doesn't exist"})
+            let delete_appointment = await Appointment.findById(id)
+            if (!delete_appointment) return res.status(404).send({ msg: "Appointment doesn't exist"})
 
-            deleteappointment.remove();
+            delete_appointment.remove();
 
             res.status(200).send({ msg: "Appointment deleted"})
         } catch (error) { 

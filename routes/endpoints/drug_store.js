@@ -1,9 +1,5 @@
-// const { json } = require('express');
 const DrugStore = require('../../models/drugstore')
 const DrugGeneric = require('../../models/druggeneric')
-// const config = require ("config")
-// const bcypt = require ("bcrypt.js")
-// const jwt = require("jsonwebtoken");
 
 const routes = function (app) {
 
@@ -60,9 +56,9 @@ const routes = function (app) {
 
     // GET ONE OF THE DRUG IN THE STORE VIA name
     app.get("/drugstores", async (req, res) => {
-        let { name, drugGeneric_id, branch_id, } = req.body
+        let { name, drug_generic_id, branch_id, } = req.body
         try {
-            let drugUnique = await DrugStore.findOne({ name, drugGeneric_id, branch_id, })
+            let drugUnique = await DrugStore.findOne({ name, drug_generic_id, branch_id, })
             if (!drugUnique) {
                 return res.status(200).send({ msg: "Drug does not exist" })
             }
@@ -86,25 +82,24 @@ const routes = function (app) {
         }
     })
 
-    // CREATE DRUG PRODUCT IN BRANCH AND POOL SIMULTANEOUSLY
+    // CREATE DRUG PRODUCT
     app.post("/drugstores", async (req, res) => {
 
         try {
-            let { name, expirydate, batchnumber, manufacturingDate, drugGeneric_id, branch_id, hospital_id } = req.body
+            let {drug_id, name, expirydate, batchnumber, manufacturing_date, drug_generic_id, branch_id, hospital_id, entered_drug } = req.body
 
             let new_drug = new DrugStore({
                 drug_id,
                 name,
                 expirydate,
                 batchnumber,
-                manufacturingDate,
-                drugGeneric_id,
+                manufacturing_date,
+                drug_generic_id,
                 branch_id,
                 hospital_id,
                 entered_drug
             })
             let drug = await new_drug.save()
-
             res.status(200).send({ data: drug, msg: "Drug created" })
         } catch (error) {
             res.status(500).send({ msg: "Server error" })
@@ -134,11 +129,9 @@ const routes = function (app) {
     app.delete("/drugstores/:_id", async (req, res) => {
         let { _id } = req.params
         let { hospital_id, branch_id } = req.query
-
         try {
-
             let deletedrug_store = await DrugStore.findOne(_id, hospital_id, branch_id)
-            if (!deletedrug_store) return res.status(4040).send({ msg: "Drug doesn't exist" })
+            if (!deletedrug_store) return res.status(404).send({ msg: "Drug doesn't exist" })
             deletedrug_store.remove();
             res.status(200).send({ msg: "Drug is deleted" })
         } catch (error) {

@@ -1,11 +1,11 @@
 const express = require('express')
 const app = express.Router()
 
-require('./endpoints/user')(app)
+require('./endpoints/appointment')(app)
 require('./endpoints/bedspace')(app)
 require('./endpoints/department')(app)
-require('./endpoints/drugGeneric')(app)
-require('./endpoints/drugStore')(app)
+require('./endpoints/drug_generic')(app)
+require('./endpoints/drug_store')(app)
 require('./endpoints/patient')(app)
 require('./endpoints/ward')(app)
 

@@ -1,10 +1,6 @@
-// const { json } = require('express');
 const DrugStore = require('../../models/drugstore')
 const DrugGeneric = require('../../models/druggeneric')
-const DrugPool = require('../../models/pooldrug')
-// const config = require ("config")
-// const bcypt = require ("bcrypt.js")
-// const jwt = require("jsonwebtoken");
+
 
 const routes = function (app) { 
 
