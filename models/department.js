@@ -8,7 +8,8 @@ const DepartmentSchema = new Schema({
     wardcount:{type: Number, default:0},
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'},   
     phone_number:{type: String},
-    deleted:{type:Boolean, default:false}},
+    deleted:{type:Boolean, default:false},
+    created_by:{type:Schema.Types.ObjectId, ref:'users'}},
     {
         timestamps:true
     }

@@ -22,7 +22,8 @@ const PatientSchema = new Schema({
     department_id:{type:Schema.Types.ObjectId, ref:'departments'}, 
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'}, 
     hospital_id:{type:Schema.Types.ObjectId, ref:'hospitals'},
-   
+    created_by:{type:String}, 
+    role:{type:String, required:true}, 
     deleted:{type:Boolean, default:false}},
     {
         timestamps:true

@@ -1,6 +1,7 @@
 // const { json } = require('express');
 const DrugStore = require('../../models/drugstore')
 const DrugGeneric = require('../../models/druggeneric')
+const DrugPool = require('../../models/pooldrug')
 // const config = require ("config")
 // const bcypt = require ("bcrypt.js")
 // const jwt = require("jsonwebtoken");
@@ -51,6 +52,37 @@ const routes = function (app) {
         }
     })
 
+     // GET ONE OF THE GENERIC DRUG AND PRODUCTS UNDER IT IN A BRANCH
+     app.get("/druggeneric/drugstore", async (req, res) => {
+        let { generic_name, branch_id } = req.query
+        try {
+            let drug_generic = await DrugGeneric.findOne({ generic_name })
+            if (!drug_generic) {
+                return res.status(404).send({msg:"Drug Generic does not exist"})
+            }
+            let {_id} = drug_generic
+            let drug_products = await DrugStore.find({ _id, branch_id })
+            res.status(200).send({data:[drug_products, drug_generic], msg:"Gotten Drug Products and Drug Generic succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+ 
+     // GET ONE OF THE GENERIC DRUG AND PRODUCTS UNDER IT IN THE DRUG POOL
+     app.get("/druggeneric/drugstore", async (req, res) => {
+        let { generic_name } = req.query
+        try {
+            let drug_generic = await DrugGeneric.findOne({ generic_name })
+            if (!drug_generic) {
+                return res.status(404).send({msg:"Drug Generic does not exist"})
+            }
+            let {_id} = drug_generic
+            let drug_pool_products = await DrugPool.find({ _id })
+            res.status(200).send({data:[drug_pool_products, drug_generic], msg:"Gotten Drug Pool and Drug Generic succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
 
       // CREATE DRUG GENERIC
       app.post("/druggenerics", async (req, res) => {

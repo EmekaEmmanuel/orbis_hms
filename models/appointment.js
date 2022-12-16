@@ -10,7 +10,7 @@ const AppointmentSchema = new Schema({
     booked_for:{type:Number},
     department_id:{type:Schema.Types.ObjectId, ref:'departments'},  
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'}, 
-    appointment_status:{type: String, default:"PENDING", enum:["CONFIRMED","COMPLETED","PENDING","DECLINED"]}},
+    appointment_status:{type: String, default:"PENDING", enum:[ "PENDING", "IN-PROGRESS", "DECLINED", "CONFIRMED","COMPLETED"]}},
     {
         timestamps:true
     }

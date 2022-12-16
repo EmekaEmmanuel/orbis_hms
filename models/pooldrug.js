@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
-const DrugStoreSchema = new Schema({
+const PoolDrugSchema = new Schema({
     drug_id:{type:String, required:true, unique:true},
     name:{type: String, required:true},
     expirydate:{type: Number,required:true},
@@ -10,13 +10,12 @@ const DrugStoreSchema = new Schema({
     drugGeneric_id:{type:Schema.Types.ObjectId, ref:'druggenerics'},
     branch_id:{type:Schema.Types.ObjectId, ref:'branches'},
     hospital_id:{type:Schema.Types.ObjectId, ref:'hospitals'},
-    company_produce:{type: String, required:true},
-    entered_by:{type:Schema.Types.ObjectId, ref:'users'},
+    company_prod:{type: String, required:true},
     deleted:{type:Boolean, default:false}}, 
     {
         timestamps:true
     }
 )
 
-const DrugStore = mongoose.model('drugstores', DrugStoreSchema)
-module.exports=DrugStore;
+const PoolDrug = mongoose.model('pooldrugs', PoolDrugSchema)
+module.exports=PoolDrug;
