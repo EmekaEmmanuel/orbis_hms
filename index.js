@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const bodyParser = require("body-parser")
 const cors = require('cors')
 
  const app = express()
@@ -10,7 +11,7 @@ const cors = require('cors')
  const PORT = 5002;
 
  mongoose.connect(URL, {useNewUrlParser:true, useUnifiedTopology:true})
- mongoose.connection.on('open', ()=>console.log('Mongodb Conncted'))
+ mongoose.connection.on('open', ()=>console.log('Mongodb Connected'))
  mongoose.connection.on('error', (e)=>console.log(e))
 
  app.use(cors())

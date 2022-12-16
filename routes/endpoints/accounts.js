@@ -1,7 +1,9 @@
 // const { json } = require('express');
 const { findById } = require('../../models/accounts');
 const User = require('../../models/accounts');
+const upload = require('../../middleware/multer');
 const { post } = require('../route_index');
+const {transporter} = require('../../middleware/mailer');
 // const config = require ("config")
 // const bcypt = require ("bcrypt.js")
 // const jwt = require("jsonwebtoken");
@@ -38,8 +40,7 @@ const routes = function (app) {
       const currentPage = p || 0;
       let users = await User.find({
         role: type.toLowerCase(),
-        branch_id,
-        deleted: false,
+        // branch_id : branch_id
       })
         .skip(currentPage * singleView)
         .limit(singleView);
@@ -53,23 +54,38 @@ const routes = function (app) {
   });
 
   // Create account
-  app.post('/accounts', (req, res) => {
-    const data = req.body;
-    User.create(data)
-      .then((user) => {
-        res.status(200).json({
-          status: 'Success',
-          message: 'User Created',
-          data: user,
-        });
+  app.post('/accounts', upload.any(), (req, res) => {
+    const pass = Math.floor(Math.random() * (999999 - 100000) + 100000)
+    req.body.password = pass;
+    const mailOptions = {
+      from: 'devjs.nurudeen@gmail.com',
+      to: req.body.email,
+      subject: 'Your Password',
+      text: JSON.stringify(pass)
+    };
+    try {
+      const data = req.body;
+      const newUser = new User(data)
+      req.files.map(e=>{
+        switch (e.fieldname) {
+          case "image":newUser.image = e.filename
+            break; 
+        }
       })
-      .catch((err) => {
-        res.status(500).json({
-          status: 'Failed',
-          message: 'Server error Occured',
-          stack: err,
-        });
+
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
       });
+
+      newUser.save();
+      res.send(newUser)
+    } catch (err) {
+      res.send({ error: err })
+    }
   });
 
   // Update User
