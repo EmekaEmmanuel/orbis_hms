@@ -3,6 +3,7 @@ const BranchSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     addr: { type: String, required: true },
+    prefix: { type: String, unique: true, required: true },
     hospital_id: { type: mongoose.Types.ObjectId, ref: 'hospital' },
   },
   {
