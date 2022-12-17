@@ -121,6 +121,8 @@ const routes = function (app) {
     app.post("/appointments", async (req, res) => {
         let {appointment_number, card_no, created_by, role, to_see, booked_for, department_id, branch_id,
             appointment_status, hospital_id } = req.body
+            req.body.appointment_number = await Appointment.find({branch_id, hospital_id}).count() + 1
+            
         try {
             let appointment = await Appointment.findOne({ appointment_number })
             if (appointment) {

@@ -107,12 +107,18 @@ const routes = function (app) {
   // REGISTER PATIENT ACCOUNT USING CREATEDBY AND ROLE AS DIFFERENCE
   app.post('/patients', upload.any(), async (req, res) => {
 
-    let { card_no, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role } = req.body
+    let { card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role  } = req.body
+
+    // let { card_no, first_name, surname, weight, bmi, finger_print, eye_scan, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role } = req.body
+   
+    req.body.card_no = await Patient.find({branch_id, hospital_id}).count() + 1
 
     try {
 
       if (role === "PATIENT") {
         // PATIENT CAN CREATE ACCOUNT
+        
+
         const pass = Math.floor(Math.random() * (999999 - 100000) + 100000)
         const hash_password = await bcypt.hash(pass, 12)
         req.body.password = hash_password;
@@ -123,7 +129,7 @@ const routes = function (app) {
           text: JSON.stringify(hashPassword)
         };
 
-        let new_patient = new Patient({ card_no, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role })
+        let new_patient = new Patient({ card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role })
 
         req.files.map(e => {
           switch (e.fieldname) {
@@ -152,7 +158,7 @@ const routes = function (app) {
         const hash_password = await bcypt.hash(pass, 12)
         req.body.password = hash_password;
 
-        let new_patient = new Patient({ card_no, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role })
+        let new_patient = new Patient({ card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role })
 
         req.files.map(e => {
           switch (e.fieldname) {

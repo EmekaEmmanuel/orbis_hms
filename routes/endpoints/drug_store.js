@@ -86,7 +86,8 @@ const routes = function (app) {
     app.post("/drugstores", async (req, res) => {
 
         try {
-            let {drug_id, name, expirydate, batchnumber, manufacturing_date, drug_generic_id, branch_id, hospital_id, entered_drug } = req.body
+            let { drug_id, name, expirydate, batchnumber, manufacturing_date, drug_generic_id, branch_id, hospital_id, entered_drug } = req.body
+            req.body.drug_id = await DrugStore.find({ branch_id, hospital_id, drug_generic_id }).count() + 1
 
             let new_drug = new DrugStore({
                 drug_id,
@@ -135,7 +136,7 @@ const routes = function (app) {
             deletedrug_store.remove();
             res.status(200).send({ msg: "Drug is deleted" })
         } catch (error) {
-            res.status(200).send({msg:"Server error"})
+            res.status(200).send({ msg: "Server error" })
         }
     })
 

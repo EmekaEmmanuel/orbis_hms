@@ -39,6 +39,7 @@ const routes = function (app) {
     app.post("/departments", async (req, res) => {
         let { dept_name, prefix, img, wardcount, branch_id, phone_number, deleted } = req.body
         try {
+           
             let department = await Department.findOne({ dept_name })
             if (department) {
                 return res.status(404).send({ data: bedspace, msg: "Department already exist" })

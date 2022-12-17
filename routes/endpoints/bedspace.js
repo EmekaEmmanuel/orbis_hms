@@ -92,7 +92,9 @@ const routes = function (app) {
 
     // CREATE BED SPACE
     app.post("/bedspaces", async (req, res) => {
-        let { bed_number, ward_id, department_id, branch_id, card_no, phone_number, is_occupied, created_bedspace } = req.body
+        
+        let { bed_number, ward_id, branch_id, card_no, phone_number, is_occupied, created_bedspace } = req.body
+        req.body.bed_number = await BedSpace.find({branch_id}).count() + 1
         try {
             let bedspace = await BedSpace.findOne({ bed_number })
             if (bedspace) {
@@ -101,7 +103,6 @@ const routes = function (app) {
             bedspace = new BedSpace({ 
                 bed_number, 
                 ward_id, 
-                department_id, 
                 branch_id, 
                 card_no, 
                 phone_number,
