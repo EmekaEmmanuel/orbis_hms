@@ -8,7 +8,7 @@ const routes = function (app) {
            app.get("/druggenerics", async (req, res) => { 
 
             try {
-                let drug_generic = await DrugGeneric.find({ branch_id }) 
+                let drug_generic = await DrugGeneric.find() 
                 res.status(200).send({
                     data: drug_generic,
                     msg: "Gotten Drug Generics succesfully"

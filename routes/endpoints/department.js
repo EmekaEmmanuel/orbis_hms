@@ -45,7 +45,8 @@ const routes = function (app) {
             }
             department = new Department({
                 dept_name, 
-                prefix, img, 
+                prefix,
+                img, 
                 wardcount, 
                 branch_id, 
                 phone_number, 

@@ -63,8 +63,8 @@ const routes = function (app) {
     }) 
 
     // GET NUMBER OF WARD BEDSPACES OCCUPIED STATUS 
-    app.get("/bedspaces/occupied", async (req, res) => {
-        let { boolean_value } = req.query
+    app.get("/bedspaces/ward/occupied", async (req, res) => {
+        let { boolean_value, ward_id } = req.query
         try {
             let bedspace = await BedSpace.find({ is_occupied:boolean_value, ward_id }).sort(-1)
             if (!bedspace) {
@@ -77,7 +77,7 @@ const routes = function (app) {
     })
 
     // GET NUMBER OF BRANCH BEDSPACES OCCUPIED STATUS 
-    app.get("/bedspaces/occupied", async (req, res) => {
+    app.get("/bedspaces/branch/occupied", async (req, res) => {
         let { boolean_value, branch_id } = req.query
         try {
             let bedspace = await BedSpace.find({ is_occupied:boolean_value, branch_id }).sort(-1)
