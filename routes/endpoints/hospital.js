@@ -66,14 +66,12 @@ const routes = function (app) {
       res.send(error);
     }
   });
+
   //To delete Hospital
   app.delete('/hospitals/:id', async (req, res)=>{
     try {
-
-      await Hospital.deleteOne({ _id: req.params.id });
-      
+      await Hospital.deleteOne({ _id: req.params.id });  
       res.json({ message: 'Hospital has been deleted', code: 200 });
-
     } catch (error) {
       res.send(404);
       res.send(error);

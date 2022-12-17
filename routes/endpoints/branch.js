@@ -1,7 +1,7 @@
 const Branch = require('../../models/branch');
 
 const routes = function (app) {
-  //To get all branch
+  //To get all branches in the system
   app.get('/branch', async (req, res) => {
     try {
       let branches = await Branch.find();
@@ -10,6 +10,10 @@ const routes = function (app) {
       res.send({ error, msg: 'Server error occurs' });
     }
   });
+
+  // To get a single branch
+
+
   //To  get single branch
   app.get('/branch/:id', async (req, res) => {
     try {
