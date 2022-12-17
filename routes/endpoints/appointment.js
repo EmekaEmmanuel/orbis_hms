@@ -4,11 +4,29 @@ const Patient = require('../../models/patient')
 
 const routes = function (app) {
 
+    // GET ALL APPOINTMENTS IN THE HOSPITAL
+    app.get("/appointments", async (req, res) => {
+        const { hospital_id } = req.query
+        try {
+            let appointment = await Appointment.find({ hospital_id })
+            if (!appointment) { 
+                return res.status(404).send({ 
+                    msg: "Appointment does not exist in this hospital",
+                  });
+            }
+            res.status(200).send({
+                data:bedspace,
+                msg:"Gotten all Appointments in the Hospital succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+
     // GET ALL APPOINTMENTS IN THE BRANCH
     app.get("/appointments", async (req, res) => {
-        const { branch_id } = req.query
+        const { hospital_id, branch_id } = req.query
         try {
-            let appointment = await Appointment.find({ branch_id })
+            let appointment = await Appointment.find({ hospital_id, branch_id })
             if (!appointment) { 
                 return res.status(404).send({ 
                     msg: "Appointment does not exist in this branch",
@@ -24,9 +42,9 @@ const routes = function (app) {
 
     // GET ALL APPOINTMENTS IN THE DEPARTMENT
     app.get("/appointments/dept", async (req, res) => {
-        const { branch_id, department_id } = req.query
+        const { hospital_id, branch_id, department_id } = req.query
         try {
-            let appointment = await Appointment.find({ branch_id, department_id })
+            let appointment = await Appointment.find({ hospital_id, branch_id, department_id })
             if (!appointment) { 
                 return res.status(404).send({ 
                     msg: "Appointment does not exist in this branch",
@@ -42,9 +60,9 @@ const routes = function (app) {
 
     // GET ALL APPOINTMENTS WITH A STAFF IN A BRANCH
     app.get("/appointments/staff", async (req, res) => {
-        const { branch_id, to_see } = req.query
+        const { branch_id, to_see, hospital_id } = req.query
         try {
-            let appointment = await Appointment.find({ branch_id, to_see })
+            let appointment = await Appointment.find({ hospital_id, branch_id, to_see })
             if (!appointment) { 
                 return res.status(404).send({ 
                     msg: "There is no Appointment for this staff ",
@@ -60,9 +78,9 @@ const routes = function (app) {
 
     // GET ALL APPOINTMENTS DETAILS WITH A STAFF IN A BRANCH
     app.get("/appointments/staff", async (req, res) => {
-        const { branch_id, _id } = req.query
+        const { hospital_id, branch_id, _id } = req.query
         try {
-            let appointment = await Appointment.find({ branch_id, _id })?.populate("to_see").populate("department_id").populate("branch_id")
+            let appointment = await Appointment.find({ hospital_id, branch_id, _id })?.populate("to_see").populate("department_id").populate("branch_id")
             if (!appointment) { 
                 return res.status(404).send({ 
                     msg: "Appointment doesnt exist",
@@ -86,24 +104,6 @@ const routes = function (app) {
             if (!appointment) { 
                 return res.status(404).send({ 
                     msg: "There is no Appointment for this patient",
-                  });
-            }
-            res.status(200).send({
-                data:appointment,
-                msg:"Gotten Patient Appointment succesfully"})  
-        } catch (error) {
-            res.status(500).send({msg:"Server error occurs"})
-        }
-    })
-
-    // GET PATIENT APPOINTMENT IN A BRANCH 
-    app.get("/appointments/patient", async (req, res) => {
-        const { card_no, branch_id } = req.query
-        try {
-            let appointment = await Appointment.find({ card_no, branch_id }).sort(-1)
-            if (!appointment) { 
-                return res.status(404).send({ 
-                    msg: "There is no Appointment for this patient in this branch ",
                   });
             }
             res.status(200).send({
