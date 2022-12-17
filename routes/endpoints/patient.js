@@ -1,8 +1,8 @@
-const { json } = require('express');
-const config = require("config")
-const bcypt = require("bcrypt.js")
-const jwt = require("jsonwebtoken"); 
 const Patient = require('../../models/patient');
+// const { json } = require('express');
+// const config = require("config")
+const bcypt = require("bcrypt")
+const jwt = require("json-web-token"); 
 const upload = require('../../middleware/multer');
 const { transporter } = require('../../middleware/mailer');
 
@@ -114,7 +114,7 @@ const routes = function (app) {
       if (role === "PATIENT") {
         // PATIENT CAN CREATE ACCOUNT
         const pass = Math.floor(Math.random() * (999999 - 100000) + 100000)
-        const hash_password = await bcrypt.hash(pass, 12)
+        const hash_password = await bcypt.hash(pass, 12)
         req.body.password = hash_password;
         const mailOptions = {
           from: 'devjs.nurudeen@gmail.com',
@@ -149,7 +149,7 @@ const routes = function (app) {
 
         // STAFF CAN CREATE ACCOUNT       
         const pass = 1234
-        const hash_password = await bcrypt.hash(pass, 12)
+        const hash_password = await bcypt.hash(pass, 12)
         req.body.password = hash_password;
 
         let new_patient = new Patient({ card_no, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role })
