@@ -6,11 +6,13 @@ const UsersSchema = new Schema(
   {
     user_name: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    // branch_id: {
-    //   type: Schema.Types.ObjectId, // ref: 'branches' },
-    // },
-    phone_number: { type: Number },
-    role: { type: String, default: 'user' },
+    branch_id: {
+      type: Schema.Types.ObjectId, // ref: 'branches' },
+    },
+    gender: {type: String, required: true},
+    age: {type: Date},
+    phone_number: { type: Number, required: true },
+    role: { type: String, required: true },
     deleted: { type: Boolean, default: false },
     image: { type: String },
     password: { type: String, required: true },

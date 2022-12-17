@@ -6,7 +6,7 @@ const { post } = require('../route_index');
 const { transporter } = require('../../middleware/mailer');
 // const config = require ("config")
 const bcrypt = require("bcrypt")
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 const routes = function (app) {
   // Get one Professional
@@ -83,7 +83,6 @@ const routes = function (app) {
           console.log('Email sent: ' + info.response);
         }
       });
-
       newUser.save();
       res.send(newUser)
     } catch (err) {
