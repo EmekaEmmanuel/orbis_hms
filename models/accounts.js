@@ -6,9 +6,9 @@ const UsersSchema = new Schema(
   {
     user_name: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    branch_id: {
-      type: Schema.Types.ObjectId, // ref: 'branches' },
-    },
+    // branch_id: {
+    //   type: Schema.Types.ObjectId, // ref: 'branches' },
+    // },
     phone_number: { type: Number },
     role: { type: String, default: 'user' },
     deleted: { type: Boolean, default: false },

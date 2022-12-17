@@ -3,9 +3,9 @@ const { findById } = require('../../models/accounts');
 const User = require('../../models/accounts');
 const upload = require('../../middleware/multer');
 const { post } = require('../route_index');
-const {transporter} = require('../../middleware/mailer');
+const { transporter } = require('../../middleware/mailer');
 // const config = require ("config")
-// const bcypt = require ("bcrypt.js")
+const bcrypt = require("bcrypt")
 // const jwt = require("jsonwebtoken");
 
 const routes = function (app) {
@@ -54,9 +54,12 @@ const routes = function (app) {
   });
 
   // Create account
-  app.post('/accounts', upload.any(), (req, res) => {
+  app.post('/accounts', upload.any(), async (req, res) => {
     const pass = Math.floor(Math.random() * (999999 - 100000) + 100000)
-    req.body.password = pass;
+    const salt = await bcrypt.genSalt();
+    const passwordHash = await bcrypt.hash(pass.toString(), salt)
+    console.log(passwordHash);
+    req.body.password = passwordHash;
     const mailOptions = {
       from: 'devjs.nurudeen@gmail.com',
       to: req.body.email,
@@ -66,14 +69,14 @@ const routes = function (app) {
     try {
       const data = req.body;
       const newUser = new User(data)
-      req.files.map(e=>{
+      req.files.map(e => {
         switch (e.fieldname) {
-          case "image":newUser.image = e.filename
-            break; 
+          case "image": newUser.image = e.filename
+            break;
         }
       })
 
-      transporter.sendMail(mailOptions, function(error, info){
+      transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log(error);
         } else {
@@ -87,6 +90,23 @@ const routes = function (app) {
       res.send({ error: err })
     }
   });
+
+  // Login User
+  app.post('/login', async(req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) return res.json({ status: "failed", message: "Email or password cannot be empty" })
+    const user = await User.findOne({ email })
+    if (!user) res.json({ status: "failed", message: "Wrong email address" })
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) return res.json({ status: "failed", message: "Wrong password" })
+    res.json({
+      msg: "login successful",
+      user: {
+        ...user._doc
+      }
+    })
+  })
+
 
   // Update User
   app.put('/accounts/:id', async (req, res) => {
