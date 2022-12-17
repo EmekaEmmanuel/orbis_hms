@@ -108,8 +108,6 @@ const routes = function (app) {
   app.post('/patients', upload.any(), async (req, res) => {
 
     let { card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role  } = req.body
-
-    // let { card_no, first_name, surname, weight, bmi, finger_print, eye_scan, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role } = req.body
    
     req.body.card_no = await Patient.find({branch_id, hospital_id}).count() + 1
 
@@ -152,7 +150,6 @@ const routes = function (app) {
         res.send({ msg: "Patient created", code: 200, token })
       }
       else {
-
         // STAFF CAN CREATE ACCOUNT       
         const pass = 1234
         const hash_password = await bcypt.hash(pass, 12)
