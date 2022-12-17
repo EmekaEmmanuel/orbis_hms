@@ -23,7 +23,7 @@ const routes = function (app) {
     })
 
     // GET ALL APPOINTMENTS IN THE BRANCH
-    app.get("/appointments", async (req, res) => {
+    app.get("/appointments/branch", async (req, res) => {
         const { hospital_id, branch_id } = req.query
         try {
             let appointment = await Appointment.find({ hospital_id, branch_id })
@@ -77,7 +77,7 @@ const routes = function (app) {
     })
 
     // GET ALL APPOINTMENTS DETAILS WITH A STAFF IN A BRANCH
-    app.get("/appointments/staff", async (req, res) => {
+    app.get("/appointments/details", async (req, res) => {
         const { hospital_id, branch_id, _id } = req.query
         try {
             let appointment = await Appointment.find({ hospital_id, branch_id, _id })?.populate("to_see").populate("department_id").populate("branch_id")
@@ -120,7 +120,7 @@ const routes = function (app) {
     // CREATE APPOINTMENT
     app.post("/appointments", async (req, res) => {
         let {appointment_number, card_no, created_by, role, to_see, booked_for, department_id, branch_id,
-            appointment_status } = req.body
+            appointment_status, hospital_id } = req.body
         try {
             let appointment = await Appointment.findOne({ appointment_number })
             if (appointment) {
@@ -128,7 +128,7 @@ const routes = function (app) {
             }
 
             appointment = new Appointment({ 
-              appointment_number, card_no, created_by, role, to_see, booked_for, department_id, branch_id, appointment_status
+              appointment_number, card_no, created_by, role, to_see, booked_for, department_id, branch_id, appointment_status, hospital_id
             })
             await appointment.save()
             res.status(200).send({data:appointment, msg:"Appointment created"}) 
