@@ -2,7 +2,7 @@ const Patient = require('../../models/patient');
 // const { json } = require('express');
 // const config = require("config")
 const bcypt = require("bcrypt")
-const jwt = require("json-web-token"); 
+const jwt = require("jsonwebtoken"); 
 const upload = require('../../middleware/multer');
 const { transporter } = require('../../middleware/mailer');
 
