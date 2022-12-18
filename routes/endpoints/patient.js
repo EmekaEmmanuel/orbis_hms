@@ -1,4 +1,6 @@
 const Patient = require('../../models/patient');
+const Hospital = require('../../models/patient');
+const Branch = require('../../models/patient');
 // const { json } = require('express');
 // const config = require("config")
 const bcypt = require("bcrypt")
@@ -65,7 +67,7 @@ const routes = function (app) {
 
     try {
 
-      let { branch_id, card_no, _ } = req.body
+      let { branch_id, card_no } = req.body
       let patient = await Patient.findOne({ branch_id, card_no })
       if (!patient) {
         return res.status(404).send({
@@ -107,16 +109,18 @@ const routes = function (app) {
   // REGISTER PATIENT ACCOUNT USING CREATEDBY AND ROLE AS DIFFERENCE
   app.post('/patients', upload.any(), async (req, res) => {
 
-    let { card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role  } = req.body
+    let { card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, branch_id, hospital_id, nhis_id, nhis_other_info, created_by  } = req.body
    
-    req.body.card_no = await Patient.find({branch_id, hospital_id}).count() + 1
+    let get_hosp_prefix = await Hospital.find({ hospital_id: req.body.hospital_id}).prefix
+    let get_branch_prefix = await Branch.find({branch_id: hospital_id}).prefix
+    let get_card = await Patient.find({branch_id, hospital_id}).count() + 1
+    req.body.card_no = `${get_hosp_prefix}${get_card}${get_branch_prefix}` 
 
     try {
 
-      if (role === "PATIENT") {
+      if (created_by === "PATIENT") {
         // PATIENT CAN CREATE ACCOUNT
         
-
         const pass = Math.floor(Math.random() * (999999 - 100000) + 100000)
         const hash_password = await bcypt.hash(pass, 12)
         req.body.password = hash_password;
@@ -124,10 +128,10 @@ const routes = function (app) {
           from: 'devjs.nurudeen@gmail.com',
           to: req.body.email,
           subject: 'Your Password',
-          text: JSON.stringify(hashPassword)
+          text: JSON.stringify(hash_password)
         };
 
-        let new_patient = new Patient({ card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role })
+        let new_patient = new Patient({ card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id,  branch_id, hospital_id, nhis_id, nhis_other_info, created_by })
 
         req.files.map(e => {
           switch (e.fieldname) {
@@ -155,7 +159,7 @@ const routes = function (app) {
         const hash_password = await bcypt.hash(pass, 12)
         req.body.password = hash_password;
 
-        let new_patient = new Patient({ card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id, ward_id, department_id, branch_id, hospital_id, created_by, role })
+        let new_patient = new Patient({ card_no, weight, bmi, finger_print, eye_scan, first_name, surname, img, other_name, address, email, password, access_key, phone_number, gender, age, language_spoken, bloodgroup, genotype, kin, kin_phone, bed_id,  branch_id, hospital_id, created_by, nhis_id, nhis_other_info })
 
         req.files.map(e => {
           switch (e.fieldname) {
@@ -203,7 +207,7 @@ const routes = function (app) {
 
 
   // CHANGE PASSWORD DATA ON FIRST LOGIN 
-  app.put("/patients/login", async (req, res) => {
+  app.put("/patients/changepassword", async (req, res) => {
     const { card_no, password, new_password } = req.body
     try {
       let patient = await Patient.findOne({ card_no })
@@ -271,7 +275,7 @@ const routes = function (app) {
   });
 
   // SOFT-DELETE PATIENT DATA
-  app.delete('/patients/:id', async (req, res) => {
+  app.delete('/patients/softdelete/:id', async (req, res) => {
     const { id } = req.params;
     let deletedpatient = await Patient.findById(id);
     if (!deletedpatient) return res.status(404).send({ msg: 'Patient not found' });

@@ -15,7 +15,7 @@ const routes = function (app) {
 
     // GET ALL DRUGS IN THE BRANCH
     app.get("/drugstores/branch", async (req, res) => {
-        const { branch_id } = req.query
+        const { branch_id, hospital_id } = req.query
         try {
             let drugstore = await DrugStore.find({ branch_id, hospital_id })
             if (!drugstore) {
@@ -86,7 +86,7 @@ const routes = function (app) {
     app.post("/drugstores", async (req, res) => {
 
         try {
-            let { drug_id, name, expirydate, batchnumber, manufacturing_date, drug_generic_id, branch_id, hospital_id, entered_drug } = req.body
+            let { drug_id, name, expirydate, batchnumber, manufacturing_date, drug_generic_id, branch_id, hospital_id, company_produce, entered_drug } = req.body
             req.body.drug_id = await DrugStore.find({ branch_id, hospital_id, drug_generic_id }).count() + 1
 
             let new_drug = new DrugStore({
@@ -98,7 +98,8 @@ const routes = function (app) {
                 drug_generic_id,
                 branch_id,
                 hospital_id,
-                entered_drug
+                entered_drug,
+                company_produce
             })
             let drug = await new_drug.save()
             res.status(200).send({ data: drug, msg: "Drug created" })
@@ -107,7 +108,7 @@ const routes = function (app) {
         }
     })
 
-    // EDIT DRUG PRODUCT IN BRANCH AND POOL SIMULTANEOUSLY 
+    // EDIT DRUG PRODUCT
     app.put("/drugstores/:_id", async (req, res) => {
         let { _id } = req.params
         let { body } = req
@@ -126,7 +127,7 @@ const routes = function (app) {
         }
     })
 
-    // DELETE DRUG PRODUCT IN BRANCH AND POOL SIMULTANEOUSLY  
+    // DELETE DRUG PRODUCT
     app.delete("/drugstores/:_id", async (req, res) => {
         let { _id } = req.params
         let { hospital_id, branch_id } = req.query

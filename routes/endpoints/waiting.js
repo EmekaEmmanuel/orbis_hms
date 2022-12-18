@@ -23,9 +23,9 @@ const routes = function (app) {
 
     // GET ALL EMERGENCY WAITING FOR A STAFF IN A BRANCH
     app.get("/waits/staff/emergency", async (req, res) => {
-        const { branch_id, to_see, hospital_id, waiting_day } = req.query
+        const { branch_id, to_see, is_emergency, hospital_id, waiting_day } = req.query
         try {
-            let waits = await Waiting.find({ hospital_id, branch_id, to_see, waiting_day })
+            let waits = await Waiting.find({ hospital_id, branch_id, to_see, waiting_day, is_emergency })
             if (!waits) { 
                 return res.status(404).send({ 
                     msg: "There is no emergency Waiting for this staff ",
