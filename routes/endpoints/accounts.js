@@ -5,8 +5,8 @@ const upload = require('../../middleware/multer');
 const { post } = require('../route_index');
 const { transporter } = require('../../middleware/mailer');
 // const config = require ("config")
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
+const { createToken } = require('../../middleware/auth');
 
 const routes = function (app) {
   // Get one Professional
@@ -55,26 +55,31 @@ const routes = function (app) {
 
   // Create account
   app.post('/accounts', upload.any(), async (req, res) => {
-    const pass = Math.floor(Math.random() * (999999 - 100000) + 100000)
+    const pass = Math.floor(Math.random() * (999999 - 100000) + 100000);
     const salt = await bcrypt.genSalt();
-    const passwordHash = await bcrypt.hash(pass.toString(), salt)
-    console.log(passwordHash);
+    const passwordHash = await bcrypt.hash(pass.toString(), salt);
+    // console.log(passwordHash);
     req.body.password = passwordHash;
     const mailOptions = {
       from: 'devjs.nurudeen@gmail.com',
       to: req.body.email,
       subject: 'Your Password',
-      text: JSON.stringify(pass)
+      text: JSON.stringify(pass),
     };
     try {
       const data = req.body;
-      const newUser = new User(data)
-      req.files.map(e => {
+      const newUser = new User(data);
+      const maxAge = 3 * 24 * 60 * 60 * 1000;
+      const token = createToken(newUser._id);
+      console.log(token);
+      res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge });
+      req.files.map((e) => {
         switch (e.fieldname) {
-          case "image": newUser.image = e.filename
+          case 'image':
+            newUser.image = e.filename;
             break;
         }
-      })
+      });
 
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
@@ -84,28 +89,36 @@ const routes = function (app) {
         }
       });
       newUser.save();
-      res.send(newUser)
+      res.send(newUser);
     } catch (err) {
-      res.send({ error: err })
+      res.send({ error: err });
     }
   });
 
   // Login User
-  app.post('/login', async(req, res) => {
+  app.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    if (!email || !password) return res.json({ status: "failed", message: "Email or password cannot be empty" })
-    const user = await User.findOne({ email })
-    if (!user) res.json({ status: "failed", message: "Wrong email address" })
-    const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch) return res.json({ status: "failed", message: "Wrong password" })
-    res.json({
-      msg: "login successful",
+    if (!email || !password)
+      return res.json({
+        status: 'failed',
+        message: 'Email or password cannot be empty',
+      });
+    const user = await User.findOne({ email });
+    if (!user) res.json({ status: 'failed', message: 'Wrong email address' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.json({ status: 'failed', message: 'Wrong password' });
+    const maxAge = 3 * 24 * 60 * 60 * 1000;
+    const token = createToken(newUser._id);
+    console.log(token);
+    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge });
+    res.status(200).json({
+      msg: 'login successful',
       user: {
-        ...user._doc
-      }
-    })
-  })
-
+        ...user._doc,
+      },
+    });
+  });
 
   // Update User
   app.put('/accounts/:id', async (req, res) => {
