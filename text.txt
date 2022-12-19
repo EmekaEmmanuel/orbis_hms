@@ -1,0 +1,627 @@
+https://docs.google.com/document/d/1fEuGQbUT0KpFzY3bCWWGqukYwtIzEJUPRF02m20ltJU/edit
+
+
+
+JOSEPH
+
+POST /hospitals
+DESCP This is to create an hospital
+BODY{
+      	“name”:””,
+      	“prefix”:””
+}
+
+GET /hospitals
+DESCP This is to get all hospitals
+
+
+
+NURU
+
+GET /accounts/:id
+DESCP- This is to get one Professional(Doctor, Nurse, Accountant, Receptionist etc)
+
+GET http://localhost:5002/accounts?type=doctors&branch_id=123&p=1
+DESCP- Get a group of professionals(All doctors in a branch, All Nurses in a branch)
+
+POST/accounts/
+DESCP- Create an account
+Body{
+    user_name: “”,
+    email: ,””
+    branch_id: “”,
+    phone_number: ,
+    role: ,
+    deleted: ,
+    image:,
+    password:,
+    rating:,
+    cadre:,
+    department: ,
+  },
+
+PUT /accounts/:id
+DESCP- Update users Info
+Body{
+    user_name: “”,
+    email: ,””
+    branch_id: “”,
+    phone_number: ,
+    role: ,
+    deleted: ,
+    image:,
+    password:,
+    rating:,
+    cadre:,
+    department: ,
+  },
+
+DELETE  /accounts/:id
+DESCP- Delete a user
+
+
+
+
+
+
+
+
+
+
+
+
+EMEKA
+
+APPOINTMENTS
+
+GET /appointments
+
+DESCP- This is to get all appointments in a hospital.
+GET http://localhost:5002/appointments?hospital_id=123 
+
+
+GET /appointments/branch
+
+DESCP- This is to get all appointments in a branch.
+GET http://localhost:5002/appointments?hospital_id=123&branch_id=123 
+
+
+GET /appointments/dept
+
+DESCP- This is to get all appointments in a branch department.
+GET http://localhost:5002/appointments?hospital_id=123&branch_id=123&department_id=123 
+
+
+GET /appointments/dept
+
+DESCP- This is to get all appointments with a staff in a branch.
+GET http://localhost:5002/appointments?hospital_id=123&branch_id=123&to_see=123 
+
+
+GET /appointments/patient
+
+DESCP- This is to get appointment with a patient.
+GET http://localhost:5002/appointments?card_no=123 
+
+
+GET /appointments/details
+
+DESCP- This is to get patient appointment details.
+GET http://localhost:5002/appointments?hospital_id=123&branch_id=123&_id=123 
+
+
+POST /appointments
+DESCP- Create new appointment
+Body{
+ appointment_number:123,
+card_no:123,
+created_by:123,
+role:PATIENT,
+ to_see:123,
+ booked_for:timestamp,
+ department_id:123,
+ branch_id:123,
+hospital_id:123
+ appointment_status:PENDING
+  },
+
+
+PUT /appointments/:_id
+DESCP- Update appointment details
+Body{
+ appointment_number:123,
+card_no:123,
+created_by:123,
+role:PATIENT,
+ to_see:123,
+ booked_for:timestamp,
+ department_id:123,
+ branch_id:123,
+hospital_id:123
+ appointment_status:PENDING
+  },
+
+
+DELETE  /appointments/:_id
+DESCP- Delete an appointment
+
+
+
+
+
+
+
+
+BEDSPACES
+
+GET /bedspaces
+
+DESCP- This is to get all bed spaces in a branch.
+GET http://localhost:5002/bedspaces?branch_id =123 
+
+
+GET //bedspaces/branch/one
+
+DESCP- This is to get one bed space in a branch.
+GET http://localhost:5002/appointments?branch_id =123&bed_number=123 
+
+   
+
+
+GET /bedspaces/ward
+
+DESCP- This is to get all bed spaces in a ward.
+GET http://localhost:5002/appointments?branch_id, ward_id=123&ward_id =123 
+
+
+
+GET /bedspaces/ward/one
+
+DESCP- This is to get one bed space in a ward.
+GET http://localhost:5002/appointments?bed_number=123&ward_id=123
+
+
+GET /bedspaces/ward/occupied
+
+DESCP- This is to get occupied status of a bedspaces in the ward.
+GET http://localhost:5002/appointments?is_occupied=false&ward_id=123
+
+
+
+GET /bedspaces/branch/occupied
+
+DESCP- This is to get occupied status of a bedspaces in the branch.
+GET http://localhost:5002/appointments?is_occupied=false&branch_id=123
+
+
+
+POST /bedspaces
+DESCP- Create a new bed space
+Body{
+    bed_number:123, 
+     ward_id:123, 
+     department_id:123, 
+      branch_id:123, 
+      card_no:123, 
+      phone_number:123,
+      is_occupied:false,
+      created_bedspace:123
+  },
+
+
+
+
+PUT /bedspaces/:_id
+DESCP- Update a bed space details
+Body{
+     bed_number:123, 
+     ward_id:123, 
+     department_id:123, 
+      branch_id:123, 
+      card_no:123, 
+      phone_number:123,
+      is_occupied:false,
+      created_bedspace:123
+  },
+
+
+DELETE  /bedspaces/:_id
+DESCP- Delete a bed space
+
+ 
+
+
+DEPARTMENTS
+
+GET /departments
+
+DESCP- This is to get all departments in a branch.
+GET http://localhost:5002/departments?branch_id =123 
+
+
+GET /departments/one
+
+DESCP- This is to get all departments in a branch.
+GET http://localhost:5002/departments/one?branch_id =123&dept_name=123
+
+
+
+POST /departments
+DESCP- Create a new department
+Body{
+     wardcount:0, 
+     dept_name: pharmacy, 
+     prefix:PHA,
+     img:image1, 
+     deleted:false,                
+     phone_number:080, 
+     branch_id:123,
+     created_dept:123,
+  },
+
+
+PUT /departments/:_id
+DESCP- Update a department details
+Body{
+       bed_number:123, 
+     wardcount:0, 
+     dept_name: pharmacy, 
+     prefix:PHA,
+     img:image1, 
+     deleted:false,                
+     phone_number:080, 
+     branch_id:123,
+     created_dept:123,
+  },
+
+
+DELETE  /departments/:_id
+DESCP- Delete a department
+
+
+
+DRUG GENERICS
+
+GET /druggenerics
+
+DESCP- This is to get all generic drugs in system.
+GET http://localhost:5002/druggenerics 
+
+
+GET /druggenerics/generic_name
+
+DESCP- This is to get one of the generics.
+GET http://localhost:5002/druggenerics/generic_name?generic_name=ampicilin
+
+
+GET /druggenerics/drugstore
+
+DESCP- This is to get one of the generics and products attached.
+GET http://localhost:5002/druggenerics/drugstore?generic_name=ampicilin
+
+
+POST /druggenerics
+DESCP- Create a drug generic
+Body{ 
+	generic_name:ampicilin, 
+           prefix:AMP,
+           created_generic:123,
+       },
+  
+
+PUT /druggenerics/:_id
+DESCP- Update drug generic details
+Body{
+      generic_name:ampicilin, 
+       prefix:AMP,
+       created_generic:123,
+  },
+ 
+
+
+DELETE  /druggenerics/:_id
+DESCP- Delete a drug generic
+
+   
+
+
+
+DRUG STORES
+
+GET /drugstores
+
+DESCP- This is to get all drugs in system.
+GET http://localhost:5002/druggenerics 
+GET /drugstores/branch 
+
+DESCP- This is to get all drugs in branch.
+GET http://localhost:5002/druggenerics?branch_id=123?hospital_id=123 
+
+
+GET /druggeneric/drugstore?generic_name=ampicilin&branch_id=123&hospital_id=123 
+
+DESCP- This is to search if present branch  has a drug before checking outside.
+GET http://localhost:5002/druggeneric/drugstore 
+
+
+GET /druggeneric/drugstore?name=epk ampicilin&generic_name=ampicilin&branch_id=123 
+
+DESCP- This is to search for a drug via name and generic in a branch.
+GET http://localhost:5002/druggeneric/name 
+
+
+
+
+POST /drugstores
+DESCP- Create a drug product
+Body{ 
+drug_id:123,
+name:123, 
+expirydate:123, 
+batchnumber:123, 
+manufacturing_date:123, 
+drug_generic_id:123, 
+branch_id:123,
+hospital_id:123,
+entered_drug:123,
+company_produce:abk 
+},
+  
+
+
+PUT /drugstores/:_id
+DESCP- Update drug product details
+Body{
+      drug_id:123,
+name:123, 
+expirydate:123, 
+batchnumber:123, 
+manufacturing_date:123, 
+drug_generic_id:123, 
+branch_id:123,
+hospital_id:123,
+entered_drug:123,
+company_produce:abk 
+  },
+ 
+
+
+DELETE  /drugstores/:_id
+DESCP- Delete a drug product
+
+
+
+
+
+WAITING
+
+GET /waits
+
+DESCP- This is to get all those waiting in the branch
+GET http://localhost:5002/waits? hospital_id=123&branch_id=123&waiting_day=123 
+
+
+
+GET /waits/staff
+
+DESCP- This is to get all those waiting for a staff
+GET http://localhost:5002/waits/staff? hospital_id=123&branch_id=123&waiting_day=123&to_see:123&is_emergency:123 
+
+
+GET /waits/staff/emergency
+
+DESCP- This is to get all those urgently waiting for a staff
+GET http://localhost:5002/waits/staff/emergency? hospital_id=123&branch_id=123&waiting_day=123 
+
+
+
+POST /waits
+DESCP- Create wait
+Body{ 
+waiting_number:0, 
+waiting_day:1234, 
+is_emergency:123, 
+department:123,, 
+branch:123,, 
+hospital:123,, 
+to_see:123,, 
+completed:false,,
+created_waiting:123 
+},
+  
+
+
+PUT /drugstores/:_id
+DESCP- Update drug product details
+Body{
+waiting_number:0, 
+waiting_day:1234, 
+is_emergency:123, 
+department:123,, 
+branch:123,, 
+hospital:123,, 
+to_see:123,, 
+completed:false,,
+created_waiting:123 
+  },
+ 
+
+DELETE  /waits/:_id
+DESCP- Delete a drug product
+
+
+
+ 
+
+WARD
+
+GET /wards
+
+DESCP- This is to get all branch wards.
+GET http://localhost:5002/wards?branch_id=123
+
+
+
+GET /wards/wardname
+
+DESCP- This is to get a branch ward using wardname..
+GET http://localhost:5002/wards?branch_id=123&ward_name =gynae
+
+
+
+GET /wards/wardprefix
+
+DESCP- This is to get a branch ward using ward prefix.
+GET http://localhost:5002/wards?branch_id=123&ward_prefix=gyn
+
+ 
+
+POST /wards
+ward_name:gynae,
+                ward_prefix:gyn,
+                bedcount:0,
+                branch_id:123,
+                contact_number:080,
+                created_ward:123,
+                deleted:false  
+},
+  
+
+
+PUT /wards/:_id
+DESCP- Update ward details
+Body{
+          ward_name:gynae,
+                ward_prefix:gyn,
+                bedcount:0,
+                branch_id:123,
+                contact_number:080,
+                created_ward:123,
+                deleted:false  
+  },
+ 
+
+
+DELETE  /wards/:_id
+DESCP- Delete a ward
+
+
+
+PATIENT
+
+GET /patients
+
+DESCP- This is to get all patients in the system.
+GET http://localhost:5002/patients
+
+
+GET /patients/hospital
+
+DESCP- This is to get all patients in a hospital.
+GET http://localhost:5002/patients/hospital?hospital_id =123
+
+
+GET /patients/inbranch
+
+DESCP- This is to get all patients registered with a branch.
+GET http://localhost:5002/patients/branch?branch_id =123,card_no =FMC123ABJ
+
+
+
+GET /patients/insystem
+
+DESCP- This is to get all patients registered with a branch.
+GET http://localhost:5002/patients/branch?branch_id =123&access_key=123
+
+
+
+
+POST /patients
+DESCP- Create a patient
+Body{ 
+ card_no:FMC123ABJ
+    first_name:ABC,
+    surname:DEF,
+    other_name:GHI,
+    img:image2,
+    weight:10kg,
+    bmi:10,
+    address:10,
+    email:abc@yahoo.com,
+    password:123,
+    access_key:123,
+    phone_number:080,
+    gender:male,
+    age:10,
+    language_spoken:IGBO,
+    bloodgroup:O positive,
+    genotype:AA,
+    kin:ABC,
+    kin_phone:080,
+    bed_id:{type:Schema.Types.ObjectId, ref:'bedspaces'}, 
+    waiting_id:{type:Schema.Types.ObjectId, ref:'waiters'},
+    branch_id:123, 
+    hospital_id:123,
+    created_by:PATIENT, 
+    nhis_id:123, 
+    nhis_other_info:123, 
+    finger_print:image2,
+    eye_scan:image2,
+    deleted:false
+},
+  
+
+
+PUT /patients/:_id
+DESCP- Update a patient details
+Body{
+ card_no:FMC123ABJ
+    first_name:ABC,
+    surname:DEF,
+    other_name:GHI,
+    img:image2,
+    weight:10kg,
+    bmi:10,
+    address:10,
+    email:abc@yahoo.com,
+    password:123,
+    access_key:123,
+    phone_number:080,
+    gender:male,
+    age:10,
+    language_spoken:IGBO,
+    bloodgroup:O positive,
+    genotype:AA,
+    kin:ABC,
+    kin_phone:080,
+    bed_id:{type:Schema.Types.ObjectId, ref:'bedspaces'}, 
+    waiting_id:{type:Schema.Types.ObjectId, ref:'waiters'},
+    branch_id:123, 
+    hospital_id:123,
+    created_by:””, 
+    nhis_id:123, 
+    nhis_other_info:123, 
+    role:PATIENT, 
+    finger_print:image2,
+    eye_scan:image2,
+    deleted:false
+  },
+ 
+
+
+
+PUT /patients/changepassword
+DESCP- Change patient password
+Body{
+card_no:FMC123ABJ,
+Password:123,
+new_password:456
+},
+
+
+DELETE  /paients/softdelete/:_id
+DESCP- Delete a patient (soft delete)
+
+
+DELETE  /paients/:_id
+DESCP- Delete a patient
