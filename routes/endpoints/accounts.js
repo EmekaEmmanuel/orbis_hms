@@ -58,7 +58,6 @@ const routes = function (app) {
     const pass = Math.floor(Math.random() * (999999 - 100000) + 100000);
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(pass.toString(), salt);
-    // console.log(passwordHash);
     req.body.password = passwordHash;
     const mailOptions = {
       from: 'devjs.nurudeen@gmail.com',
@@ -70,9 +69,13 @@ const routes = function (app) {
       const data = req.body;
       const newUser = new User(data);
       const maxAge = 3 * 24 * 60 * 60 * 1000;
-      const token = createToken(newUser._id);
-      console.log(token);
+      const token = createToken(newUser._id, newUser.email, newUser.role);
+
+      // const Refreshtoken = createToken(newUser._id, email);
+      // const Accesstoken = createToken(newUser._id);
+
       res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge });
+      // .cookie('Refress', Refreshtoken, { maxAge: 2 * maxAge });
       req.files.map((e) => {
         switch (e.fieldname) {
           case 'image':
@@ -89,7 +92,8 @@ const routes = function (app) {
         }
       });
       newUser.save();
-      res.send(newUser);
+      res.send({ date: newUser, token: token });
+      // let details = jwt.verify('Our Secret', token);
     } catch (err) {
       res.send({ error: err });
     }
@@ -110,11 +114,11 @@ const routes = function (app) {
       return res.json({ status: 'failed', message: 'Wrong password' });
     const maxAge = 3 * 24 * 60 * 60 * 1000;
     const token = createToken(newUser._id);
-    console.log(token);
     res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge });
     res.status(200).json({
       msg: 'login successful',
-      user: {
+      token: token,
+      data: {
         ...user._doc,
       },
     });
