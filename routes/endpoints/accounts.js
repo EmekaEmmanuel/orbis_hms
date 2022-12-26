@@ -38,6 +38,16 @@ const routes = function (app) {
       const { type, branch_id, p } = req.query;
       const singleView = 15;
       const currentPage = p || 0;
+      const profession = type.toLowerCase();
+      if (profession == 'all') {
+        let users = await User.find()
+          .skip(currentPage * singleView)
+          .limit(singleView);
+        res.status(200).json({
+          status: 'Success',
+          data: users,
+        });
+      }
       let users = await User.find({
         role: type.toLowerCase(),
         // branch_id : branch_id
@@ -70,12 +80,7 @@ const routes = function (app) {
       const newUser = new User(data);
       const maxAge = 3 * 24 * 60 * 60 * 1000;
       const token = createToken(newUser._id, newUser.email, newUser.role);
-
-      // const Refreshtoken = createToken(newUser._id, email);
-      // const Accesstoken = createToken(newUser._id);
-
       res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge });
-      // .cookie('Refress', Refreshtoken, { maxAge: 2 * maxAge });
       req.files.map((e) => {
         switch (e.fieldname) {
           case 'image':
@@ -93,13 +98,10 @@ const routes = function (app) {
       });
       newUser.save();
       res.send({ date: newUser, token: token });
-      // let details = jwt.verify('Our Secret', token);
     } catch (err) {
       res.send({ error: err });
     }
   });
-
-  // Login User
   app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password)

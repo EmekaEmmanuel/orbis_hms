@@ -9,8 +9,8 @@ const UsersSchema = new Schema(
     branch_id: {
       type: Schema.Types.ObjectId, // ref: 'branches' },
     },
-    gender: {type: String, required: true},
-    age: {type: Date},
+    gender: { type: String, required: true },
+    age: { type: Date },
     phone_number: { type: Number, required: true },
     role: { type: String, required: true },
     deleted: { type: Boolean, default: false },
