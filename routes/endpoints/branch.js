@@ -2,26 +2,7 @@ const Branch = require('../../models/branch');
 
 
 const routes = function (app) {
-
-//To login hospital
-
-  app.post('/branch/login', async (req, res) => {
-    try {
-      let data = {};
-      let branch = await Branch.findOne(req.body);
-      if (!branch) return res.send({ msg: 'Invalid credential', code: 404 });
-      data.email = branch.email;
-
-      res.json({ message: 'Login successful', code: 200, data });
-    } catch (error) {
-      res.send('Server error occurs');
-    }
-  });
- 
-
   //To get all branch
-
-
   app.get('/branch', async (req, res) => {
     try {
       let branches = await Branch.find();
@@ -30,8 +11,6 @@ const routes = function (app) {
       res.send({ error, msg: 'Server error occurs' });
     }
   });
-
-
   //To  get single branch
   app.get('/branch/:id', async (req, res) => {
     try {
