@@ -5,6 +5,7 @@ const BranchSchema = new mongoose.Schema(
     addr: { type: String, required: true },
     prefix: { type: String, unique: true, required: true },
     hospital_id: { type: mongoose.Types.ObjectId, ref: 'hospitals' },
+    password: { type: String,required:true },
   },
   {
     timestamps: true,

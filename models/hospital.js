@@ -3,7 +3,7 @@ const HospitalSchema = new mongoose.Schema({
   name: { type: String, unique: true, required: true },
   prefix: { type: String, unique: true, required: true },
   email: { type: String, unique: true, required: true },
-  password: { type: String },
+  password: { type: String, required: true },
   logo:{type:String,default:""}
 },
 {
