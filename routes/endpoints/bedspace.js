@@ -1,8 +1,4 @@
-// const { json } = require('express');
-const BedSpace = require('../../models/bedspace')
-// const config = require ("config")
-// const bcypt = require ("bcrypt.js")
-// const jwt = require("jsonwebtoken");
+const BedSpace = require('../../models/bedspace') 
 
 const routes = function (app) {
 
@@ -66,9 +62,39 @@ const routes = function (app) {
         }
     }) 
 
+    // GET NUMBER OF WARD BEDSPACES OCCUPIED STATUS 
+    app.get("/bedspaces/ward/occupied", async (req, res) => {
+        let { boolean_value, ward_id } = req.query
+        try {
+            let bedspace = await BedSpace.find({ is_occupied:boolean_value, ward_id }).sort(-1)
+            if (!bedspace) {
+                return res.status(404).send({msg:"Bedspace does not exist in the branch"})
+            }
+            res.status(200).send({data:bedspace, msg:"Gotten Bedspace succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+
+    // GET NUMBER OF BRANCH BEDSPACES OCCUPIED STATUS 
+    app.get("/bedspaces/branch/occupied", async (req, res) => {
+        let { boolean_value, branch_id } = req.query
+        try {
+            let bedspace = await BedSpace.find({ is_occupied:boolean_value, branch_id }).sort(-1)
+            if (!bedspace) {
+                return res.status(404).send({msg:"Bedspace does not exist in the branch"})
+            }
+            res.status(200).send({data:bedspace, msg:"Gotten Bedspace succesfully"})  
+        } catch (error) {
+            res.status(500).send({msg:"Server error occurs"})
+        }
+    })
+
     // CREATE BED SPACE
     app.post("/bedspaces", async (req, res) => {
-        let { bed_number, ward_id, department_id, branch_id, card_no, phone_number, is_occupied } = req.body
+        
+        let { bed_number, ward_id, branch_id, card_no, phone_number, is_occupied, created_bedspace } = req.body
+        req.body.bed_number = await BedSpace.find({branch_id}).count() + 1
         try {
             let bedspace = await BedSpace.findOne({ bed_number })
             if (bedspace) {
@@ -77,7 +103,6 @@ const routes = function (app) {
             bedspace = new BedSpace({ 
                 bed_number, 
                 ward_id, 
-                department_id, 
                 branch_id, 
                 card_no, 
                 phone_number,
@@ -92,15 +117,15 @@ const routes = function (app) {
     })
 
     // EDIT BEDSPACE INFORMATION
-    app.put("/bedspaces/:id", async (req, res) => {
+    app.put("/bedspaces/:_id", async (req, res) => {
         try {
-            let { id } = req.params
+            let { _id } = req.params
             let { body } = req;
-            let bedspaceUpdate = await BedSpace.findById(id)
-            if (!bedspaceUpdate) return res.status(404).send({ msg: "Bed space not found"})
+            let bedspace_update = await BedSpace.findById(_id)
+            if (!bedspace_update) return res.status(404).send({ msg: "Bed space not found"})
             let data = bedspaceUpdate._doc;
-            bedspaceUpdate.overwrite({ ...data, ...body })
-           const bedspace = await bedspaceUpdate.save()
+            bedspace_update.overwrite({ ...data, ...body })
+           const bedspace = await bedspace_update.save()
             res.status(200).send({data:bedspace, msg: "Bedspace updated"})
         } catch (error) { 
             res.status(500).send({msg:"Server error occurs"})
@@ -111,14 +136,14 @@ const routes = function (app) {
     app.delete("/bedspaces/:id", async (req, res) => {
         try {
             let { id } = req.params
-            let deletebedspace = await BedSpace.findById(id)
-            if (!deletebedspace) return res.status(404).send({ msg: "Bedspace doesn't exist"})
+            let delete_bedspace = await BedSpace.findById(id)
+            if (!delete_bedspace) return res.status(404).send({ msg: "Bedspace doesn't exist"})
 
-            deletebedspace.remove();
+            delete_bedspace.remove();
 
             res.status(200).send({ msg: "Bedspace deleted"})
         } catch (error) { 
-            res.send({msg:"Server error occurs"})
+            res.status(500).send({msg:"Server error occurs"})
         }
     })
 

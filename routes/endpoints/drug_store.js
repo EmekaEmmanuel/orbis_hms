@@ -1,17 +1,12 @@
-// const { json } = require('express');
 const DrugStore = require('../../models/drugstore')
 const DrugGeneric = require('../../models/druggeneric')
-const DrugPool = require('../../models/pooldrug') 
-// const config = require ("config")
-// const bcypt = require ("bcrypt.js")
-// const jwt = require("jsonwebtoken");
 
 const routes = function (app) {
 
-    // GET ALL DRUGS IN THE BRANCH STORE
+    // GET ALL DRUGS IN THE SYSTEM
     app.get("/drugstores", async (req, res) => {
         try {
-            let drug_store = await DrugStore.find({ branch_id });
+            let drug_store = await DrugStore.find();
             res.status(200).send({ data: drug_store, msg: "Gotten all drugs succesfully" })
         } catch (error) {
             res.status(500).send({ msg: "Server error occurs" })
@@ -19,19 +14,41 @@ const routes = function (app) {
     })
 
     // GET ALL DRUGS IN THE BRANCH
-    app.get("/drugstores", async (req, res) => {
-        const { branch_id } = req.query
+    app.get("/drugstores/branch", async (req, res) => {
+        const { branch_id, hospital_id } = req.query
         try {
-            let bedspace = await DrugStore.find({ branch_id })
-            if (!bedspace) {
+            let drugstore = await DrugStore.find({ branch_id, hospital_id })
+            if (!drugstore) {
                 return res.status(404).send({
                     msg: "Bedspace does not exist in the branch",
                 });
             }
             res.status(200).send({
-                data: bedspace,
-                msg: "Gotten Branch Bedspaces succesfully"
+                data: ddrugstore,
+                msg: "Gotten Drugs in branch succesfully"
             })
+        } catch (error) {
+            res.status(500).send({ msg: "Server error occurs" })
+        }
+    })
+
+    // GET ONE OF THE GENERIC DRUG AND PRODUCTS UNDER IT 
+    app.get("/druggeneric/drugstore", async (req, res) => {
+        let { generic_name, branch_id, hospital_id } = req.query
+        try {
+            let drug_generic = await DrugGeneric.findOne({ generic_name })
+            if (!drug_generic) {
+                return res.status(404).send({ msg: "Drug Generic does not exist" })
+            }
+            let { _id } = drug_generic
+            let drug_products = await DrugStore.find({ _id, branch_id, hospital_id })
+            if (drug_products) {
+                return res.status(200).send({ data: [drug_products, drug_generic], msg: "Gotten Drug Products and Drug Generic succesfully" })
+            }
+            else {
+                let drug_products_alt = await DrugStore.find({ _id })
+                res.status(200).send({ data: [drug_products_alt, drug_generic], msg: "Gotten Drug Products from different branch succesfully" })
+            }
         } catch (error) {
             res.status(500).send({ msg: "Server error occurs" })
         }
@@ -39,9 +56,9 @@ const routes = function (app) {
 
     // GET ONE OF THE DRUG IN THE STORE VIA name
     app.get("/drugstores", async (req, res) => {
-        let { name, drugGeneric_id, branch_id, } = req.body
+        let { name, drug_generic_id, branch_id, } = req.body
         try {
-            let drugUnique = await DrugStore.findOne({ name, drugGeneric_id, branch_id, })
+            let drugUnique = await DrugStore.findOne({ name, drug_generic_id, branch_id, })
             if (!drugUnique) {
                 return res.status(200).send({ msg: "Drug does not exist" })
             }
@@ -63,116 +80,64 @@ const routes = function (app) {
         } catch (error) {
             res.status(500).send({ msg: "Server error occurs" })
         }
-    }) 
+    })
 
-    // CREATE DRUG PRODUCT IN BRANCH AND POOL SIMULTANEOUSLY
+    // CREATE DRUG PRODUCT
     app.post("/drugstores", async (req, res) => {
 
         try {
-            let drugFn = async (drug, DrugStore, drug_id, name, expirydate, batchnumber, manufacturingDate, drugGeneric_id, branch_id, entered_drug) => {
+            let { drug_id, name, expirydate, batchnumber, manufacturing_date, drug_generic_id, branch_id, hospital_id, company_produce, entered_drug } = req.body
+            req.body.drug_id = await DrugStore.find({ branch_id, hospital_id, drug_generic_id }).count() + 1
 
-                let { name, expirydate, batchnumber, manufacturingDate, drugGeneric_id, branch_id } = req.body
-
-                let drug = await DrugStore.findOne({ name })
-                if (drug) {
-                    return res.status(404).send({ data: drug, msg: "Drug already exist in branch" })
-                }
-                drug = new DrugStore({
-                    drug_id,
-                    name,
-                    expirydate,
-                    batchnumber,
-                    manufacturingDate,
-                    drugGeneric_id,
-                    branch_id,
-                    entered_drug
-                })
-                await drug.save()
-            }
-
-            let poolDrugFn = async (drug, DrugStore, drug_id, name, expirydate, batchnumber, manufacturingDate, drugGeneric_id, branch_id) => {
-                let { name, expirydate, batchnumber, manufacturingDate, drugGeneric_id, branch_id } = req.body
-                let pool_drug = await DrugPool.findOne({ name })
-                if (pool_drug) {
-                    return res.status(4).send({ data: pool_drug, msg: "Drug alrady exist in pool" })
-                }
-                pool_drug = new DrugPool({
-                    drug_id,
-                    name,
-                    expirydate,
-                    batchnumber,
-                    manufacturingDate,
-                    drugGeneric_id,
-                    branch_id,
-                    entered_drug
-                })
-                await pool_drug.save()
-            }
-            let results = Promise.allSettled([drugFn, poolDrugFn])
-            res.status(200).send({ data: results, msg: "Drug created in the pool and branch store" })
+            let new_drug = new DrugStore({
+                drug_id,
+                name,
+                expirydate,
+                batchnumber,
+                manufacturing_date,
+                drug_generic_id,
+                branch_id,
+                hospital_id,
+                entered_drug,
+                company_produce
+            })
+            let drug = await new_drug.save()
+            res.status(200).send({ data: drug, msg: "Drug created" })
         } catch (error) {
             res.status(500).send({ msg: "Server error" })
         }
     })
 
-     // EDIT DRUG PRODUCT IN BRANCH AND POOL SIMULTANEOUSLY 
+    // EDIT DRUG PRODUCT
     app.put("/drugstores/:_id", async (req, res) => {
+        let { _id } = req.params
+        let { body } = req
+
         try {
-            let drugFn = async (_id, body) => {
-                let { _id } = req.params
-                let { body } = req;
-                let drugStoreUpdate = await DrugStore.findById(_id)
-                if (!drugStoreUpdate) return res.json({ msg: "Drug Generic not found", code: 404 })
+            let drug_store_update = await DrugStore.findOne(_id, body.hospital_id, body.branch_id)
+            if (!drug_store_update) return res.json({ msg: "Drug not found", code: 404 })
 
-                let data = drugStoreUpdate._doc;
-                drugStoreUpdate.overwrite({ ...data, ...body })
-                const drugNew = await drugStoreUpdate.save()
-                return drugNew
-            }
-
-            let poolDrugFn = async (_id, body) => {
-                let { _id } = req.params
-                let { body } = req;
-                let drugStoreUpdate = await DrugPool.findById(_id)
-                if (!drugStoreUpdate) return res.json({ msg: "Drug Generic not found", code: 404 })
-
-                let data = drugStoreUpdate._doc;
-                drugStoreUpdate.overwrite({ ...data, ...body })
-                const drugNew = await drugStoreUpdate.save()
-                return drugNew
-            }
-            let results = Promise.allSettled([drugFn, poolDrugFn])
-            res.status(200).send({ data: results, msg: "Drug Details updated in pool and branch" })
+            let data = drug_store_update._doc;
+            drug_store_update.overwrite({ ...data, ...body })
+            const drug_new = await drug_store_update.save()
+            res.status(200).send({ data: drug_new, msg: "Drug Details updated" })
         } catch (err) {
             console.log(err)
             res.status(500).send("Server error")
         }
     })
 
-    // DELETE DRUG PRODUCT IN BRANCH AND POOL SIMULTANEOUSLY  
+    // DELETE DRUG PRODUCT
     app.delete("/drugstores/:_id", async (req, res) => {
+        let { _id } = req.params
+        let { hospital_id, branch_id } = req.query
         try {
-            let drugFn = async (_id) => {
-                let { _id } = req.params
-                let deletedrugStore = await DrugStore.findById(_id)
-
-                if (!deletedrugStore) return res.status(200).send({ msg: "Drug doesn't exist" })
-
-                deletedrugStore.remove();
-            }
-
-            let poolDrugFn = async (id) => {
-                let { _id } = req.params
-                let deletedrugStore = await DrugPool.findById(_id)
-
-                if (!deletedrugStore) return res.status(200).send({ msg: "Drug doesn't exist" })
-
-                deletedrugStore.remove();
-            }
-            let results = Promise.allSettled([drugFn, poolDrugFn])
-            res.status(200).send({data:results, msg: "Drug is deleted" })
+            let deletedrug_store = await DrugStore.findOne(_id, hospital_id, branch_id)
+            if (!deletedrug_store) return res.status(404).send({ msg: "Drug doesn't exist" })
+            deletedrug_store.remove();
+            res.status(200).send({ msg: "Drug is deleted" })
         } catch (error) {
-            res.send("Server error")
+            res.status(200).send({ msg: "Server error" })
         }
     })
 

@@ -1,8 +1,4 @@
-// const { json } = require('express'); 
-const Department = require('../../models/department')
-// const config = require ("config")
-// const bcypt = require ("bcrypt.js")
-// const jwt = require("jsonwebtoken");
+const Department = require('../../models/department') 
 
 const routes = function (app) {
 
@@ -43,13 +39,15 @@ const routes = function (app) {
     app.post("/departments", async (req, res) => {
         let { dept_name, prefix, img, wardcount, branch_id, phone_number, deleted } = req.body
         try {
+           
             let department = await Department.findOne({ dept_name })
             if (department) {
                 return res.status(404).send({ data: bedspace, msg: "Department already exist" })
             }
             department = new Department({
                 dept_name, 
-                prefix, img, 
+                prefix,
+                img, 
                 wardcount, 
                 branch_id, 
                 phone_number, 
