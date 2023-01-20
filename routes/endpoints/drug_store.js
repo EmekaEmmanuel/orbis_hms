@@ -56,7 +56,7 @@ const routes = function (app) {
 
     // GET ONE OF THE DRUG IN THE STORE VIA name
     app.get("/drugstores", async (req, res) => {
-        let { name, drug_generic_id, branch_id, } = req.body
+        let { name, drug_generic_id, branch_id } = req.body
         try {
             let drugUnique = await DrugStore.findOne({ name, drug_generic_id, branch_id, })
             if (!drugUnique) {
@@ -86,21 +86,10 @@ const routes = function (app) {
     app.post("/drugstores", async (req, res) => {
 
         try {
-            let { drug_id, name, expirydate, batchnumber, manufacturing_date, drug_generic_id, branch_id, hospital_id, company_produce, entered_drug } = req.body
+            let { drug_generic_id, branch_id, hospital_id } = req.body
             req.body.drug_id = await DrugStore.find({ branch_id, hospital_id, drug_generic_id }).count() + 1
 
-            let new_drug = new DrugStore({
-                drug_id,
-                name,
-                expirydate,
-                batchnumber,
-                manufacturing_date,
-                drug_generic_id,
-                branch_id,
-                hospital_id,
-                entered_drug,
-                company_produce
-            })
+            let new_drug = new DrugStore(req.body)
             let drug = await new_drug.save()
             res.status(200).send({ data: drug, msg: "Drug created" })
         } catch (error) {

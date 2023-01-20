@@ -113,7 +113,7 @@ const routes = function (app) {
    
     let get_hosp_prefix = await Hospital.find({ hospital_id: req.body.hospital_id}).prefix
     let get_branch_prefix = await Branch.find({branch_id: hospital_id}).prefix
-    let get_card = await Patient.find({branch_id, hospital_id}).count() + 1
+    let get_card = await Patient.find({branch_id, hospital_id}).countDocuments() + 1
     req.body.card_no = `${get_hosp_prefix}${get_card}${get_branch_prefix}` 
 
     try {
